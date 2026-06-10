@@ -133,9 +133,44 @@ router.post("/login", controller.login);
  *     security:
  *       - bearerAuth: []
  *     responses:
+ *       200:
+ *         description: Usuário autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *                 avatarUrl:
+ *                   type: string
+ *                   nullable: true
+ *                 bio:
+ *                   type: string
+ *                   nullable: true
+ *             example:
+ *               id: cm1q2w3e4r5t6y7u8i9o0p
+ *               name: Artur Silva
+ *               username: artur_silva
+ *               email: artur@example.com
+ *               role: USER
+ *               avatarUrl: null
+ *               bio: null
+ *       401:
+ *         description: Token ausente ou inválido
+ *       404:
+ *         description: Usuário não encontrado
  *       501:
  *         description: Não implementado
  */
-router.get("/me", authMiddleware,  controller.me);
+router.get("/me", authMiddleware, controller.me);
 
 export default router;
