@@ -2,253 +2,290 @@
 
 ## 📌 Descrição
 
-O **Smash or Pass** é uma aplicação web inspirada no modelo de interação do Tinder, aplicada ao domínio culinário. A plataforma permite que usuários descubram novas receitas de forma rápida e intuitiva por meio de interações simples de interesse (“Smash”) ou desinteresse (“Pass”).
+O **Smash or Pass** é uma aplicação web inspirada no modelo de interação do Tinder, aplicada ao domínio culinário.
 
-Além da descoberta, usuários podem cadastrar suas próprias receitas, visualizar receitas curtidas e interagir com conteúdos de outros usuários.
+A plataforma permite que usuários descubram novas receitas por meio de interações simples de interesse (**Smash**) ou desinteresse (**Pass**), além de possibilitar o cadastro, gerenciamento e compartilhamento de receitas próprias.
 
-O projeto foi desenvolvido como trabalho final da disciplina de Desenvolvimento de Software para Web, com foco na aplicação prática de conceitos como arquitetura cliente-servidor, APIs REST, autenticação e organização em camadas.
+O projeto foi desenvolvido como trabalho final da disciplina de Desenvolvimento de Software para Web, aplicando conceitos de:
+
+- Arquitetura Cliente-Servidor
+- APIs REST
+- Autenticação e Autorização
+- Persistência de Dados
+- Documentação de Software
+- Desenvolvimento Full Stack
 
 ---
 
 ## 🎯 Objetivo
 
-Desenvolver uma aplicação web completa que integre frontend, backend e banco de dados, demonstrando:
-
-- Separação de responsabilidades entre camadas
-- Implementação de API REST
-- Autenticação de usuários
-- Persistência de dados
-- Organização modular do código
-
-## ⚙️ Funcionalidades
-
-### 🔐 Autenticação
-
-- Cadastro de usuário
-- Login com geração de token JWT
-- Proteção de rotas autenticadas
-
-### 🍽️ Receitas
-
-- Criação de receitas
-- Edição de receitas próprias
-- Exclusão de receitas próprias
-- Visualização de receitas
-
-### 🔥 Interação (Smash or Pass)
-
-- Marcar receita como "Smash" (curtida)
-- Marcar receita como "Pass"
-- Registro de interações por usuário
-
-### ⭐ Favoritos
-
-- Listagem de receitas curtidas
-- Remoção de receitas da lista
-
-### 💬 Comentários
-
-- Comentários em receitas
-- Visualização de comentários
-
-### 🏷️ Categorias
-
-- Organização de receitas por categoria
-- Filtros de busca
-
-### 🛠️ Administração
-
-- Remoção de receitas
-- Gerenciamento de usuários
-- Dashboard com métricas
+Desenvolver uma aplicação web completa composta por frontend, backend e banco de dados, demonstrando boas práticas de desenvolvimento e documentação de software.
 
 ---
 
-## 👥 Papéis de Usuário
+## ⚙️ Principais Funcionalidades
 
-### Usuário Comum
+### 🔐 Autenticação
 
-- Criar conta e autenticar
-- Visualizar receitas
-- Interagir com receitas
-- Criar, editar e excluir suas próprias receitas
-- Visualizar receitas curtidas
+- Cadastro de usuários
+- Login com JWT
+- Controle de acesso por papéis (RBAC)
 
-### Administrador
+### 🍽️ Receitas
 
-- Todas as permissões de usuário comum
-- Remover qualquer receita
-- Gerenciar usuários
-- Moderar conteúdo
+- Cadastro de receitas
+- Edição de receitas próprias
+- Exclusão de receitas próprias
+- Upload de imagens
+- Moderação de conteúdo
+
+### 🔥 Smash or Pass
+
+- Curtir receitas (Smash)
+- Rejeitar receitas (Pass)
+- Desfazer última interação
+- Priorização de receitas ainda não avaliadas
+
+### 💬 Comentários
+
+- Criação de comentários
+- Edição de comentários próprios
+- Exclusão de comentários próprios
+
+### 🏷️ Catálogo
+
+- Categorias
+- Ingredientes
+- Preferências alimentares
+- Alergênicos
+
+### 🛠️ Administração
+
+- Aprovação de receitas
+- Aprovação de ingredientes
+- Aprovação de categorias
+- Dashboard administrativo
+
+---
+
+## 📚 Documentação
+
+Toda a documentação do projeto encontra-se na pasta `docs/`.
+
+### Arquitetura
+
+| Documento                             | Descrição                      |
+|---------------------------------------|--------------------------------|
+| `docs/architecture/erd.md`            | Modelo entidade-relacionamento |
+| `docs/architecture/business-rules.md` | Regras de negócio              |
+| `docs/architecture/enums.md`          | Enums do sistema               |
+| `docs/architecture/conventions.md`    | Convenções arquiteturais       |
+
+### Banco de Dados
+
+| Documento                        | Descrição                              |
+|----------------------------------|----------------------------------------|
+| `docs/database/prisma-schema.md` | Estrutura do banco e mapeamento Prisma |
+| `docs/database/indexes.md`       | Índices e otimizações                  |
+
+### API
+
+| Documento                    | Descrição                  |
+|------------------------------|----------------------------|
+| `docs/api/authentication.md` | Autenticação e autorização |
+| `docs/api/users.md`          | Endpoints de usuários      |
+| `docs/api/recipes.md`        | Endpoints de receitas      |
+| `docs/api/interactions.md`   | Endpoints de Smash/Pass    |
+| `docs/api/comments.md`       | Endpoints de comentários   |
+| `docs/api/moderation.md`     | Endpoints administrativos  |
+| `docs/api/dashboard.md`      | Dashboard e métricas       |
 
 ---
 
 ## 🧱 Arquitetura
 
-O sistema segue o modelo **cliente-servidor**, com separação clara entre frontend e backend.
+O sistema segue o modelo **Cliente-Servidor**, dividido em duas aplicações independentes.
 
-### Backend
+**Backend:**
 
-Organizado em camadas:
+Tecnologias:
 
-- Routes
-- Controllers
-- Services
-- Repositories
+- Node.js
+- TypeScript
+- Express
+- Prisma ORM
+- PostgreSQL
+- JWT
+- Bcrypt
+- Swagger/OpenAPI
 
-### Frontend
+Arquitetura em camadas:
 
-- Baseado em componentes reutilizáveis
-- Consumo de API REST
+```text
+Routes
+  ↓
+Controllers
+  ↓
+Services
+  ↓
+Repositories
+  ↓
+Database
+```
 
----
+**Frontend:**
 
-## 🗄️ Modelo de Dados (Resumo)
+Tecnologias:
 
-### Usuário
+- React
+- TypeScript
+- Axios
+- React Router
 
-- id
-- nome
-- email
-- senha (criptografada)
-- papel
-- data de criação
-
-### Receita
-
-- id
-- título
-- descrição
-- ingredientes
-- modo de preparo
-- tempo de preparo
-- imagem
-- autor
-
-### Interação
-
-- id
-- usuário
-- receita
-- tipo (smash/pass)
-- data
+Arquitetura baseada em componentes reutilizáveis.
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-### Backend
+**Backend:**
 
 - Node.js
+- TypeScript
 - Express
-- Prisma (ORM)
+- Prisma ORM
 - PostgreSQL
-- JWT (autenticação)
-- Bcrypt (criptografia de senha)
+- JWT
+- Bcrypt
+- Swagger/OpenAPI
 
-### Frontend
+**Backend:**
 
-- ReactJS
-- Axios (cuidado com versão que sofreu ataque de segurança, usar versão segura)
+- React
+- TypeScript
+- Axios
 
 ### Ferramentas
 
-- Git & GitHub
-- Trello (gestão)
+- Git
+- GitHub
+- Trello
+- Excalidraw
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 🚀 Como Executar
 
 ### Pré-requisitos
 
-- Node.js instalado
-- PostgreSQL configurado
+- Node.js
+- PostgreSQL
 
 ---
 
-### 🔧 Backend
+**Backend:**
 
 ```bash
 cd backend
+
 npm install
+
 npx prisma migrate dev
+
 npm run dev
 ```
 
----
+Backend disponível em:
 
-### 💻 Frontend
+```text
+http://localhost:3000
+```
 
-```bash
-cd frontend
-npm install
-npm start
+Swagger disponível em:
+
+```text
+http://localhost:3000/api-docs
 ```
 
 ---
 
-### 📡 API
+**Frontend:**
 
-A API segue os princípios REST:
+```bash
+cd frontend
 
-- Uso adequado de métodos HTTP (GET, POST, PUT, DELETE)
-- Retorno de status codes apropriados
-- Tratamento de erros
+npm install
 
-A documentação pode ser acessada via Swagger após execução do backend.
+npm run dev
+```
+
+Frontend disponível em:
+
+```text
+http://localhost:5173
+```
 
 ---
 
 ## 📁 Estrutura do Projeto
 
-```bash
+```text
 smash-or-pass/
+│
 ├── backend/
+│   ├── prisma/
 │   ├── src/
 │   │   ├── routes/
 │   │   ├── controllers/
 │   │   ├── services/
 │   │   ├── repositories/
 │   │   ├── middlewares/
+│   │   ├── validations/
+│   │   ├── utils/
 │   │   └── config/
-└── frontend/
-    └── src/
-        ├── components/
-        ├── pages/
-        ├── services/
-        └── hooks/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── hooks/
+│   │   ├── contexts/
+│   │   └── routes/
+│
+├── docs/
+│   ├── architecture/
+│   ├── api/
+│   └── database/
+│
+└── README.md
 ```
 
 ---
 
-## 📊 Organização do Projeto
+## 📊 Status do Projeto
 
-O desenvolvimento foi conduzido utilizando práticas ágeis, com divisão de tarefas entre os membros da equipe e acompanhamento via quadro Kanban.
+**Em desenvolvimento.**
 
-## 🧪 Possíveis Melhorias
-
-- Testes automatizados
-- Paginação de resultados
-- Upload de imagens
-- Filtros avançados
-- Melhorias de UI/UX
-
-## 📌 Status do Projeto
-
-**Em desenvolvimento!**
+---
 
 ## 👨‍💻 Equipe
 
-- [Arthur Vinicius Carneiro Nunes](https://github.com/ApenasUmSonhador)
+- [Arthur Vinicius Carneiro Nunes](https://github.com/ArthurViniNunes)
 - [João Igor Almeida Gomes](https://github.com/Igoxrx)
 - [Marcos Antonio Alencar da Rocha Junior](https://github.com/mirkojr)
-- [Samyra Vitoria Lima de Almeida](https://github.com/samyraalmeida)
+- [Samyra Vitória Lima de Almeida](https://github.com/samyraalmeida)
+
+---
 
 ## 🤝 Contribuição
 
-Antes de fazer commits, veja as diretrizes em [CONTRIBUTING.md](./CONTRIBUTING.md)
+Antes de realizar alterações no projeto, consulte:
+
+- `CONTRIBUTING.md`
+
+---
 
 ## 📄 Licença
 
-Este projeto está sob a licença [MIT](LICENSE).
+Este projeto está licenciado sob a [licença MIT](LICENSE).
