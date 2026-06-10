@@ -379,6 +379,26 @@ Manter documentação sincronizada com:
 
 ---
 
+### ADR-014 — Exclusão de Usuários Remove Conteúdo Associado
+
+**Status:**
+
+- Aceita
+
+**Contexto:**
+A exclusão de um usuário pode deixar conteúdo órfão, como receitas e comentários.
+
+**Decisão:**
+A exclusão de um usuário remove automaticamente todo conteúdo associado a ele, incluindo receitas, comentários e interações.
+
+**Consequências:**
+
+- Positivas
+  - Evita conteúdo órfão.
+  - Mantém integridade do sistema.
+- Negativas
+  - Perda de dados associada à exclusão do usuário.
+
 ## Histórico
 
 | ADR     | Título                                    | Status |

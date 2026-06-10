@@ -34,38 +34,11 @@ Desenho de ERD: [Link do Excalidraw](https://excalidraw.com/#json=M7Mq_K4ZC48ENx
 
 - User 1:N Recipe
 - User 1:N Comment
-- User N:N Role
+- User 1:N Category (sugestões criadas)
+- User 1:N Ingredient (sugestões criadas)
 - User N:N Allergen
 - User N:N DietPreference
 - User 1:N RecipeInteraction
-
-### `UserRole`
-
-| Campo  | Tipo |
-| ------ | ---- |
-| userId | UUID |
-| roleId | UUID |
-
-**Relacionamentos:**
-
-- UserRole N:1 User
-- UserRole N:1 Role
-
-### `Role`
-
-| Campo | Tipo     |
-| ----- | -------- |
-| id    | UUID     |
-| name  | Enum     |
-
-**Name:**
-
-- USER
-- ADMIN
-
-**Relacionamentos:**
-
-- Role N:N User (através de UserRole)
 
 ### `UserAllergen`
 
@@ -150,31 +123,19 @@ Representa preferências ou restrições alimentares do usuário.
 
 ### `Recipe`
 
-| Campo                    | Tipo           |
-| ------------------------ | -------------- |
-| id                       | UUID           |
-| title                    | String         |
-| description              | String         |
-| preparationMethod        | String         |
-| preparationTimeMinutes   | Integer        |
-| difficulty               | Enum           |
-| imageUrl                 | String         |
-| status                   | Enum           |
-| authorId                 | UUID (User.id) |
-| createdAt                | DateTime       |
-| updatedAt                | DateTime       |
-
-**Difficulty:**
-
-- EASY
-- MEDIUM
-- HARD
-
-**Status:**
-
-- PENDING
-- APPROVED
-- REJECTED
+| Campo                    | Tipo             |
+| ------------------------ | ---------------- |
+| id                       | UUID             |
+| title                    | String           |
+| description              | String           |
+| preparationMethod        | String           |
+| preparationTimeMinutes   | Integer          |
+| difficulty               | Difficulty       |
+| imageUrl                 | String           |
+| status                   | ModerationStatus |
+| authorId                 | UUID (User.id)   |
+| createdAt                | DateTime         |
+| updatedAt                | DateTime         |
 
 **Relacionamentos:**
 
@@ -203,18 +164,12 @@ Representa preferências ou restrições alimentares do usuário.
 
 Representa categorias utilizadas para classificar receitas.
 
-| Campo     | Tipo           |
-| ----------| -------------- |
-| id        | UUID           |
-| name      | String         |
-| status    | Enum           |
-| createdBy | UUID (User.id) |
-
-**Status:**
-
-- PENDING
-- APPROVED
-- REJECTED
+| Campo       | Tipo             |
+| ------------| ---------------- |
+| id          | UUID             |
+| name        | String           |
+| status      | ModerationStatus |
+| createdById | UUID (User.id)   |
 
 **Exemplos:**
 
@@ -227,6 +182,7 @@ Representa categorias utilizadas para classificar receitas.
 **Relacionamentos:**
 
 - Category N:N Recipe
+- Category N:1 User (criador da sugestão)
 
 ---
 
@@ -258,23 +214,18 @@ Tabela intermediária responsável por armazenar ingredientes e suas quantidades
 
 Representa ingredientes aprovados ou pendentes de aprovação.
 
-| Campo     | Tipo           |
-| ----------| -------------- |
-| id        | UUID           |
-| name      | String         |
-| status    | Enum           |
-| createdBy | UUID (User.id) |
-
-**Status:**
-
-- PENDING
-- APPROVED
-- REJECTED
+| Campo       | Tipo             |
+| ------------| ---------------- |
+| id          | UUID             |
+| name        | String           |
+| status      | ModerationStatus |
+| createdByid | UUID (User.id)   |
 
 **Relacionamentos:**
 
 - Ingredient N:N Recipe
 - Ingredient N:N Allergen
+- Ingredient N:1 User (criador da sugestão)
 
 ---
 
@@ -332,18 +283,13 @@ Tabela intermediária utilizada para identificar quais dietas são compatíveis 
 
 Representa as ações de Swipe realizadas pelos usuários.
 
-| Campo     | Tipo     |
-| ----------| -------- |
-| id        | UUID     |
-| recipeId  | UUID     |
-| userId    | UUID     |
-| type      | Enum     |
-| createdAt | DateTime |
-
-**Type:**
-
-- SMASH
-- PASS
+| Campo     | Tipo            |
+| ----------| --------------- |
+| id        | UUID            |
+| recipeId  | UUID            |
+| userId    | UUID            |
+| type      | InteractionType |
+| createdAt | DateTime        |
 
 **Relacionamentos:**
 
@@ -359,5 +305,3 @@ Representa as ações de Swipe realizadas pelos usuários.
 Um usuário pode possuir apenas uma interação ativa por receita.
 
 Não é permitido que o mesmo usuário possua simultaneamente interações SMASH e PASS para a mesma receita.
-
----

@@ -63,27 +63,11 @@ Representa usuários da plataforma.
 
 **Relacionamentos:**
 
-- User → UserRole
 - User → UserAllergen
 - User → UserDietPreference
 - User → Recipe
 - User → Comment
 - User → RecipeInteraction
-
----
-
-### Role
-
-Representa papéis de acesso.
-
-#### Valores
-
-- USER
-- ADMIN
-
-**Relacionamentos:**
-
-- Role → UserRole
 
 ---
 
@@ -93,19 +77,19 @@ Representa receitas cadastradas pelos usuários.
 
 **Campos:**
 
-| Campo                  | Tipo         |
-| ---------------------- | ------------ |
-| id                     | UUID         |
-| title                  | String       |
-| description            | String       |
-| preparationMethod      | String       |
-| preparationTimeMinutes | Integer      |
-| difficulty             | Difficulty   |
-| imageUrl               | String       |
-| status                 | RecipeStatus |
-| authorId               | UUID         |
-| createdAt              | DateTime     |
-| updatedAt              | DateTime     |
+| Campo                  | Tipo             |
+| ---------------------- | ---------------- |
+| id                     | UUID             |
+| title                  | String           |
+| description            | String           |
+| preparationMethod      | String           |
+| preparationTimeMinutes | Integer          |
+| difficulty             | Difficulty       |
+| imageUrl               | String?          |
+| status                 | ModerationStatus |
+| authorId               | UUID             |
+| createdAt              | DateTime         |
+| updatedAt              | DateTime         |
 
 **Relacionamentos:**
 
@@ -124,12 +108,12 @@ Representa categorias utilizadas pelas receitas.
 
 **Campos:**
 
-| Campo     | Tipo           |
-| --------- | -------------- |
-| id        | UUID           |
-| name      | String         |
-| status    | CategoryStatus |
-| createdBy | UUID           |
+| Campo       | Tipo             |
+| ----------- | ---------------- |
+| id          | UUID             |
+| name        | String           |
+| status      | ModerationStatus |
+| createdByid | UUID             |
 
 **Relacionamentos:**
 
@@ -143,12 +127,12 @@ Representa ingredientes aprovados ou pendentes.
 
 **Campos:**
 
-| Campo     | Tipo             |
-| --------- | ---------------- |
-| id        | UUID             |
-| name      | String           |
-| status    | IngredientStatus |
-| createdBy | UUID             |
+| Campo       | Tipo             |
+| ----------- | ---------------- |
+| id          | UUID             |
+| name        | String           |
+| status      | ModerationStatus |
+| createdByid | UUID             |
 
 **Relacionamentos:**
 
@@ -236,18 +220,6 @@ Um usuário pode possuir apenas uma interação por receita.
 
 ## Tabelas de Relacionamento
 
-### UserRole
-
-Relacionamento N:N entre User e Role.
-
-**Chave composta:**
-
-```prisma
-@@id([userId, roleId])
-```
-
----
-
 ### UserAllergen
 
 Relacionamento N:N entre User e Allergen.
@@ -323,56 +295,6 @@ Relacionamento N:N entre Recipe e DietPreference.
 
 ```prisma
 @@id([recipeId, dietPreferenceId])
-```
-
----
-
-## Enums
-
-### RoleName
-
-```text
-USER
-ADMIN
-```
-
-### RecipeStatus
-
-```text
-PENDING
-APPROVED
-REJECTED
-```
-
-### IngredientStatus
-
-```text
-PENDING
-APPROVED
-REJECTED
-```
-
-### CategoryStatus
-
-```text
-PENDING
-APPROVED
-REJECTED
-```
-
-### Difficulty
-
-```text
-EASY
-MEDIUM
-HARD
-```
-
-### InteractionType
-
-```text
-SMASH
-PASS
 ```
 
 ---

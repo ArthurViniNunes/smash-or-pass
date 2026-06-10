@@ -33,3 +33,7 @@
 ## Dashboard
 
 As métricas devem ser calculadas através de agregações sobre os dados existentes, não sendo necessária uma entidade específica para dashboard.
+
+## Deleção de Usuários
+
+A exclusão de um usuário remove automaticamente todo conteúdo associado ao usuário.

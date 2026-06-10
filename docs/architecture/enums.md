@@ -6,19 +6,7 @@
 - USER
 - ADMIN
 
-## RecipeStatus
-
-- PENDING
-- APPROVED
-- REJECTED
-
-## IngredientStatus
-
-- PENDING
-- APPROVED
-- REJECTED
-
-## CategoryStatus
+## Status
 
 - PENDING
 - APPROVED
