@@ -72,11 +72,11 @@ export class AuthService {
 
     const accessToken = jwt.sign(
       {
-        sub: user.id,
         role: user.role,
       },
-      env.jwtSecret,
+      env.JWT_SECRET,
       {
+        subject: user.id,
         expiresIn: "7d",
       }
     );
@@ -91,4 +91,26 @@ export class AuthService {
       },
     };
   }
+  
+  async me(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new HttpError(404, "User not found");
+  }
+
+  return {
+    id: user.id,
+    name: user.name,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    avatarUrl: user.avatarUrl,
+    bio: user.bio,
+  };
+}
 }

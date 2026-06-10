@@ -1,11 +1,13 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 
-dotenv.config();
+import { z } from "zod";
 
-export const env = {
-  port: Number(process.env.PORT) || 3000,
+const envSchema = z.object({
+  PORT: z.string().default("3000"),
 
-  databaseUrl: process.env.DATABASE_URL || "",
+  DATABASE_URL: z.string(),
 
-  jwtSecret: process.env.JWT_SECRET || "secret"
-};
+  JWT_SECRET: z.string().min(10),
+});
+
+export const env = envSchema.parse(process.env);

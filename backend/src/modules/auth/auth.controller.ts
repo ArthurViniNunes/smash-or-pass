@@ -44,10 +44,17 @@ export class AuthController {
 
   me = async (
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ) => {
-    return res.status(501).json({
-      message: "Not implemented",
-    });
+    try {
+      const user = await this.service.me(
+        req.user!.id
+      );
+
+      return res.json(user);
+    } catch (error) {
+      next(error);
+    }
   };
 }
