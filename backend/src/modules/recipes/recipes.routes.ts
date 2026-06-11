@@ -520,4 +520,206 @@ router.post(
   controller.create
 );
 
+/**
+ * @openapi
+ * /recipes/{id}:
+ *   patch:
+ *     tags:
+ *       - Recipes
+ *     summary: Atualizar receita
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - description
+ *               - preparationMethod
+ *               - preparationTimeMinutes
+ *               - difficulty
+ *               - categoryIds
+ *               - ingredients
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 150
+ *                 example: Macarrão ao pesto
+ *               description:
+ *                 type: string
+ *                 minLength: 10
+ *                 maxLength: 1000
+ *                 example: Receita simples e rápida de macarrão com pesto.
+ *               preparationMethod:
+ *                 type: string
+ *                 minLength: 10
+ *                 example: Cozinhe o macarrão e misture ao molho.
+ *               preparationTimeMinutes:
+ *                 type: integer
+ *                 minimum: 1
+ *                 example: 25
+ *               difficulty:
+ *                 type: string
+ *                 enum:
+ *                   - EASY
+ *                   - MEDIUM
+ *                   - HARD
+ *                 example: EASY
+ *               categoryIds:
+ *                 type: array
+ *                 minItems: 1
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *               dietPreferenceIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: uuid
+ *                 default: []
+ *               ingredients:
+ *                 type: array
+ *                 minItems: 1
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - ingredientId
+ *                     - quantity
+ *                     - unit
+ *                   properties:
+ *                     ingredientId:
+ *                       type: string
+ *                       format: uuid
+ *                     quantity:
+ *                       type: number
+ *                       minimum: 0
+ *                     unit:
+ *                       type: string
+ *                       minLength: 1
+ *           example:
+ *             title: Macarrão ao pesto
+ *             description: Receita simples e rápida de macarrão com pesto.
+ *             preparationMethod: Cozinhe o macarrão e misture ao molho.
+ *             preparationTimeMinutes: 25
+ *             difficulty: EASY
+ *             categoryIds:
+ *               - 7b54-4e0b-9b2e-5a7fd0a1d123
+ *             dietPreferenceIds:
+ *               - 6b54-4e0b-9b2e-5a7fd0a1d124
+ *             ingredients:
+ *               - ingredientId: 5b54-4e0b-9b2e-5a7fd0a1d126
+ *                 quantity: 100
+ *                 unit: g
+ *     responses:
+ *       200:
+ *         description: Receita atualizada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 title:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 preparationMethod:
+ *                   type: string
+ *                 preparationTimeMinutes:
+ *                   type: integer
+ *                 difficulty:
+ *                   type: string
+ *                 imageUrl:
+ *                   type: string
+ *                   nullable: true
+ *                 status:
+ *                   type: string
+ *                 authorId:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                 categories:
+ *                   type: array
+ *                 dietPreferences:
+ *                   type: array
+ *                 ingredients:
+ *                   type: array
+ *             example:
+ *               id: 8d8e9f2b-7b54-4e0b-9b2e-5a7fd0a1d123
+ *               title: Macarrão ao pesto
+ *               description: Receita simples e rápida de macarrão com pesto.
+ *               preparationMethod: Cozinhe o macarrão e misture ao molho.
+ *               preparationTimeMinutes: 25
+ *               difficulty: EASY
+ *               imageUrl: null
+ *               status: PENDING
+ *               authorId: cm1q2w3e4r5t6y7u8i9o0p
+ *               createdAt: 2026-06-10T04:22:33.000Z
+ *               updatedAt: 2026-06-10T04:22:33.000Z
+ *               categories: []
+ *               dietPreferences: []
+ *               ingredients: []
+ *       400:
+ *         description: Categorias ou ingredientes inválidos, ou payload inválido
+ *       401:
+ *         description: Token ausente ou inválido
+ *       403:
+ *         description: Sem permissão para editar esta receita
+ *       404:
+ *         description: Receita não encontrada
+ */
+router.patch(
+  "/:id",
+  authMiddleware,
+  controller.update
+);
+
+/**
+ * @openapi
+ * /recipes/{id}:
+ *   delete:
+ *     tags:
+ *       - Recipes
+ *     summary: Deletar receita
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       204:
+ *         description: Receita deletada com sucesso
+ *       401:
+ *         description: Token ausente ou inválido
+ *       403:
+ *         description: Sem permissão para deletar esta receita
+ *       404:
+ *         description: Receita não encontrada
+ */
+router.delete(
+  "/:id",
+  authMiddleware,
+  controller.delete
+);
+
 export default router;

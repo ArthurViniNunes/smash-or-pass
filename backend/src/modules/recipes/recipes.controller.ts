@@ -11,6 +11,7 @@ import {
 import {
   createRecipeSchema,
   recipeIdParamSchema,
+  updateRecipeSchema,
 } from "./recipes.schemas";
 
 import {
@@ -102,6 +103,67 @@ export class RecipesController {
       return res.json(feed);
     } catch (err) {
       next(err);
+    }
+  };
+
+  update = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { id } =
+        recipeIdParamSchema.parse(
+          req.params
+        );
+
+      const user =
+        getAuthUser(req);
+
+      const data =
+        updateRecipeSchema.parse(
+          req.body
+        );
+
+      const recipe =
+        await this.service.update(
+          id,
+          user.id,
+          user.role,
+          data
+        );
+
+      return res.json(recipe);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  delete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { id } =
+        recipeIdParamSchema.parse(
+          req.params
+        );
+
+      const user =
+        getAuthUser(req);
+
+      await this.service.delete(
+        id,
+        user.id,
+        user.role
+      );
+
+      return res
+        .status(204)
+        .send();
+    } catch (error) {
+      next(error);
     }
   };
 }

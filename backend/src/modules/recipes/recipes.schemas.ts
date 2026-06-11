@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const recipeIdParamSchema =
   z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
   });
 
 export const createRecipeSchema =
@@ -28,18 +28,18 @@ export const createRecipeSchema =
     ]),
 
     categoryIds: z
-      .array(z.string().uuid())
+      .array(z.uuid())
       .min(1),
 
     dietPreferenceIds: z
-      .array(z.string().uuid())
+      .array(z.uuid())
       .default([]),
 
     ingredients: z
       .array(
         z.object({
           ingredientId:
-            z.string().uuid(),
+            z.uuid(),
 
           quantity:
             z.number().positive(),
@@ -54,4 +54,12 @@ export const createRecipeSchema =
 export type CreateRecipeDto =
   z.infer<
     typeof createRecipeSchema
+  >;
+
+export const updateRecipeSchema =
+  createRecipeSchema;
+
+export type UpdateRecipeDto =
+  z.infer<
+    typeof updateRecipeSchema
   >;
