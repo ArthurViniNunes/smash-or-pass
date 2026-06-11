@@ -1,64 +1,48 @@
-import { prisma }
-  from "../../lib/prisma";
-
-import { HttpError }
-  from "../../utils/http-error";
+import { prisma } from "../../lib/prisma";
+import { HttpError } from "../../utils/http-error";
+import { ModerationStatus } from "../../generated/prisma";
 
 export class ModerationService {
+  async listPending() {
+    const [recipes, categories, ingredients] = await Promise.all([
+      prisma.recipe.findMany({ where: { status: "PENDING" } }),
+      prisma.category.findMany({ where: { status: "PENDING" } }),
+      prisma.ingredient.findMany({ where: { status: "PENDING" } }),
+    ]);
 
-  async approveRecipe(
-    recipeId: string
-  ) {
-    const recipe =
-      await prisma.recipe.findUnique({
-        where: {
-          id: recipeId,
-        },
-      });
+    return { recipes, categories, ingredients };
+  }
 
-    if (!recipe) {
-      throw new HttpError(
-        404,
-        "Recipe not found"
-      );
-    }
+  async moderateRecipe(id: string, status: ModerationStatus) {
+    const recipe = await prisma.recipe.findUnique({ where: { id } });
+
+    if (!recipe) throw new HttpError(404, "Recipe not found");
 
     return prisma.recipe.update({
-      where: {
-        id: recipeId,
-      },
-
-      data: {
-        status: "APPROVED",
-      },
+      where: { id },
+      data: { status },
     });
   }
 
-  async rejectRecipe(
-    recipeId: string
-  ) {
-    const recipe =
-      await prisma.recipe.findUnique({
-        where: {
-          id: recipeId,
-        },
-      });
+  async moderateCategory(id: string, status: ModerationStatus) {
+    const category = await prisma.category.findUnique({ where: { id } });
 
-    if (!recipe) {
-      throw new HttpError(
-        404,
-        "Recipe not found"
-      );
-    }
+    if (!category) throw new HttpError(404, "Category not found");
 
-    return prisma.recipe.update({
-      where: {
-        id: recipeId,
-      },
+    return prisma.category.update({
+      where: { id },
+      data: { status },
+    });
+  }
 
-      data: {
-        status: "REJECTED",
-      },
+  async moderateIngredient(id: string, status: ModerationStatus) {
+    const ingredient = await prisma.ingredient.findUnique({ where: { id } });
+
+    if (!ingredient) throw new HttpError(404, "Ingredient not found");
+
+    return prisma.ingredient.update({
+      where: { id },
+      data: { status },
     });
   }
 }

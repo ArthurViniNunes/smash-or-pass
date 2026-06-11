@@ -1,35 +1,19 @@
-import { Router }
-  from "express";
-
-import {
-  ModerationController,
-} from "./moderation.controller";
-
-import {
-  authMiddleware,
-} from "../../middlewares/auth.middleware";
-
-import {
-  roleMiddleware,
-} from "../../middlewares/role.middleware";
+import { Router } from "express";
+import { ModerationController } from "./moderation.controller";
+import { authMiddleware } from "../../middlewares/auth.middleware";
+import { roleMiddleware } from "../../middlewares/role.middleware";
+import { RoleName } from "../../generated/prisma";
 
 const router = Router();
+const controller = new ModerationController();
 
-const controller =
-  new ModerationController();
+router.use(authMiddleware);
+router.use(roleMiddleware(RoleName.ADMIN));
 
-router.patch(
-  "/recipes/:id/approve",
-  authMiddleware,
-  roleMiddleware("ADMIN"),
-  controller.approveRecipe
-);
+router.get("/pending", controller.listPending);
 
-router.patch(
-  "/recipes/:id/reject",
-  authMiddleware,
-  roleMiddleware("ADMIN"),
-  controller.rejectRecipe
-);
+router.patch("/recipes/:id", controller.moderateRecipe);
+router.patch("/categories/:id", controller.moderateCategory);
+router.patch("/ingredients/:id", controller.moderateIngredient);
 
 export default router;
