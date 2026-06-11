@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
 
     "target": "ES2022",
 
-    "module": "CommonJS",
+    "module": "commonjs",
     "moduleResolution": "Node",
 
     "strict": true,
@@ -18,10 +18,10 @@
 
     "sourceMap": true,
 
-    "types": ["node"],
+    "types": ["node", "jest"],
 
   },
 
-  "include": ["src"],
+  "include": ["src", "tests", "prisma"],
   "exclude": ["node_modules", "dist"]
 }

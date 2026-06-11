@@ -14,7 +14,7 @@ async function main() {
   console.log("🌱 Iniciando seed básico...");
 
   const passwordHash =
-    await bcrypt.hash("123456", 10);
+    await bcrypt.hash("12345678", 10);
 
   // =========================
   // USERS
@@ -23,7 +23,7 @@ async function main() {
   const admin =
     await prisma.user.upsert({
       where: {
-        email: "admin@smashorpass.com",
+        email: "admin@smash.com",
       },
 
       update: {},
@@ -31,7 +31,7 @@ async function main() {
       create: {
         name: "Administrador",
         username: "admin",
-        email: "admin@smashorpass.com",
+        email: "admin@smash.com",
         passwordHash,
         role: RoleName.ADMIN,
       },
