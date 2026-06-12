@@ -1,0 +1,233 @@
+/* ===================== Layout base ===================== */
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- OnboardingSection ---------- */
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.ring {
+  position: relative;
+  width: min(78vw, 300px);
+  aspect-ratio: 1 / 1;
+}
+
+.orbit {
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  border: 2px dashed var(--pink-ring);
+}
+
+.disc {
+  position: absolute;
+  inset: 16%;
+  border-radius: 50%;
+  border: 26px solid var(--pink-soft);
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f8b7c7;
+  box-shadow: inset 0 0 0 4px #fff;
+  z-index: 2;
+}
+
+.thumb {
+  position: absolute;
+  width: 22%;
+  height: 22%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* imagens preenchem os círculos */
+.center img,
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.p1 { top: -3%; left: 39%; }
+.p2 { top: 16%; left: 76%; }
+.p3 { top: 64%; left: 76%; }
+.p4 { top: 82%; left: 39%; }
+.p5 { top: 62%; left: 2%; }
+.p6 { top: 14%; left: 2%; }
+
+.title {
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: pre-line; /* respeita o \n do message */
+}
+
+/* ---------- AuthSection (com imagem de fundo) ---------- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 24px;
+  position: relative;
+  color: #fff;
+
+  /* overlay escuro POR CIMA da foto, pra leitura */
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)),
+    url("/images/food-bg.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.logoBig {
+  display: none;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  width: min(320px, 100%);
+  padding: 12px 24px;
+  background: var(--pink);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(233, 75, 124, 0.35);
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.register {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.link {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* ===================== Desktop (2 colunas) ===================== */
+@media (min-width: 992px) {
+  .page { flex-direction: row; }
+  .hero { flex: 1.2; }
+  .ring { width: min(34vw, 380px); }
+
+  .title {
+    border: 1px solid #d9d9d9;
+    padding: 14px 22px;
+    border-radius: 8px;
+  }
+
+  .panel {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .logoBig { display: block; }
+}
+
+/* ===================== Animações (sutis) ===================== */
+@keyframes spinSlow {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseRing {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(233, 75, 124, 0.35); }
+  50%      { box-shadow: 0 0 0 10px rgba(233, 75, 124, 0); }
+}
+
+/* órbita girando devagar */
+.orbit {
+  animation: spinSlow 40s linear infinite;
+}
+
+/* pratos flutuando, com tempos diferentes */
+.thumb {
+  animation: floatY 5s ease-in-out infinite;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.p1 { animation-delay: 0s; }
+.p2 { animation-delay: 0.6s; }
+.p3 { animation-delay: 1.2s; }
+.p4 { animation-delay: 1.8s; }
+.p5 { animation-delay: 2.4s; }
+.p6 { animation-delay: 3s; }
+
+.thumb:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+}
+
+/* entrada suave das seções */
+.hero  { animation: fadeUp 0.7s ease both; }
+.panel { animation: fadeUp 0.7s ease 0.15s both; }
+
+/* pulso leve + hover no botão */
+.button {
+  animation: pulseRing 2.8s ease-in-out infinite;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(233, 75, 124, 0.45);
+}
+.button:active {
+  transform: translateY(0);
+}
+
+/* respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .orbit, .thumb, .hero, .panel, .button {
+    animation: none;
+  }
+  .thumb { transition: none; }
+}
