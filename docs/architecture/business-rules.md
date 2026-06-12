@@ -3,6 +3,8 @@
 
 ## Receitas
 
+- Receitas criadas por usuários iniciam com status PENDING.
+- Administradores podem criar receitas já aprovadas.
 - Apenas receitas com status `APPROVED` podem aparecer no Swipe.
 - Apenas o autor da receita ou administradores podem editá-la.
 - Apenas o autor da receita ou administradores podem excluí-la.
@@ -24,6 +26,8 @@
 - Receitas ainda não avaliadas possuem prioridade máxima.
 - Receitas previamente avaliadas podem voltar a ser exibidas caso não existam receitas inéditas disponíveis.
 - O usuário pode desfazer sua última interação.
+- Cada usuário pode possuir apenas uma interação por receita.
+- Caso uma interação já exista para a receita, uma nova interação substitui a anterior.
 
 ## Administração
 
@@ -32,7 +36,16 @@
 
 ## Dashboard
 
-As métricas devem ser calculadas através de agregações sobre os dados existentes, não sendo necessária uma entidade específica para dashboard.
+Dashboard retorna:
+
+- Total de usuários
+- Total de receitas
+- Receitas pendentes
+- Receitas aprovadas
+- Total de comentários
+- Total de interações
+
+(Possivelmente expandir para incluir mais métricas no futuro, conforme necessidades do frontend.)
 
 ## Deleção de Usuários
 

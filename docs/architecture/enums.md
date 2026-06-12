@@ -6,7 +6,7 @@
 - USER
 - ADMIN
 
-## Status
+## ModerationStatus
 
 - PENDING
 - APPROVED

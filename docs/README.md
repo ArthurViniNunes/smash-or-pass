@@ -24,23 +24,31 @@ docs/
 ├── README.md
 │
 ├── architecture/
-│   ├── erd.md
 │   ├── business-rules.md
+│   ├── conventions.md
+│   ├── decision-log.md
 │   ├── enums.md
-│   └── conventions.md
+│   └── erd.md
 │
 ├── api/
+│   ├── allergens.md
 │   ├── authentication.md
-│   ├── users.md
-│   ├── recipes.md
-│   ├── interactions.md
+│   ├── categories.md
 │   ├── comments.md
+│   ├── dashboard.md
+│   ├── diet-preferences.md
+│   ├── ingredients.md
 │   ├── moderation.md
-│   └── dashboard.md
+│   ├── recipe-interactions.md
+│   ├── recipes.md
+│   ├── user-allergens.md
+│   ├── users-diet-preferences.md
+│   └── users.md
 │
 └── database/
     ├── prisma-schema.md
-    └── indexes.md
+    ├── indexes.md
+    └── README.md
 ```
 
 ---
@@ -72,15 +80,21 @@ Cada documento descreve:
 - Regras de autorização
 - Exemplos de requisição e resposta
 
-| Documento               | Descrição                                         |
-| ----------------------- | ------------------------------------------------- |
-| `api/authentication.md` | Cadastro, login e autenticação JWT.               |
-| `api/comments.md`       | Comentários em receitas.                          |
-| `api/dashboard.md`      | Métricas administrativas e indicadores.           |
-| `api/interactions.md`   | Funcionalidades de Smash, Pass e Undo.            |
-| `api/moderation.md`     | Aprovação e rejeição de conteúdo.                 |
-| `api/recipes.md`        | Cadastro, consulta, edição e remoção de receitas. |
-| `api/users.md`          | Operações relacionadas aos usuários.              |
+| Documento                       | Descrição                                            |
+| ------------------------------- | ---------------------------------------------------- |
+| `api/allergens.md`              | Gerenciamento de alérgenos e restrições alimentares. |
+| `api/authentication.md`         | Cadastro, login e autenticação JWT.                  |
+| `api/categories.md`             | Gerenciamento de categorias de receitas.             |
+| `api/comments.md`               | Comentários em receitas.                             |
+| `api/dashboard.md`              | Métricas administrativas e indicadores.              |
+| `api/diet-preferences.md`       | Preferências dietéticas dos usuários.                |
+| `api/ingredients.md`            | Gerenciamento de ingredientes.                       |
+| `api/moderation.md`             | Aprovação e rejeição de conteúdo.                    |
+| `api/recipe-interactions.md`    | Interações específicas de receitas.                  |
+| `api/recipes.md`                | Cadastro, consulta, edição e remoção de receitas.    |
+| `api/user-allergens.md`         | Gerenciamento de alérgenos dos usuários.             |
+| `api/users-diet-preferences.md` | Preferências dietéticas dos usuários.                |
+| `api/users.md`                  | Operações relacionadas aos usuários.                 |
 
 ---
 
@@ -92,6 +106,7 @@ Documentação relacionada à persistência dos dados.
 | --------------------------- | ------------------------------------------------ |
 | `database/indexes.md`       | Estratégia de índices e otimizações de consulta. |
 | `database/prisma-schema.md` | Mapeamento do modelo de dados para Prisma ORM.   |
+| `database/README.md`        | Visão geral do banco de dados.                   |
 
 ---
 

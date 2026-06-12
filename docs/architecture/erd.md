@@ -27,6 +27,7 @@ Desenho de ERD: [Link do Excalidraw](https://excalidraw.com/#json=M7Mq_K4ZC48ENx
 | passwordHash | String   |
 | avatarUrl    | String?  |
 | bio          | String?  |
+| role         | RoleName |
 | createdAt    | DateTime |
 | updatedAt    | DateTime |
 
@@ -170,6 +171,7 @@ Representa categorias utilizadas para classificar receitas.
 | name        | String           |
 | status      | ModerationStatus |
 | createdById | UUID (User.id)   |
+| createdAt   | DateTime         |
 
 **Exemplos:**
 
@@ -192,6 +194,7 @@ Tabela intermediária responsável por armazenar ingredientes e suas quantidades
 
 | Campo        | Tipo    |
 | ------------ | ------- |
+| id           | UUID    |
 | recipeId     | UUID    |
 | ingredientId | UUID    |
 | quantity     | Decimal |
@@ -220,6 +223,7 @@ Representa ingredientes aprovados ou pendentes de aprovação.
 | name        | String           |
 | status      | ModerationStatus |
 | createdByid | UUID (User.id)   |
+| createdAt   | DateTime         |
 
 **Relacionamentos:**
 

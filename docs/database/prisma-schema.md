@@ -53,6 +53,7 @@ Representa usuários da plataforma.
 | passwordHash | String   |
 | avatarUrl    | String?  |
 | bio          | String?  |
+| role         | RoleName |
 | createdAt    | DateTime |
 | updatedAt    | DateTime |
 
@@ -114,6 +115,7 @@ Representa categorias utilizadas pelas receitas.
 | name        | String           |
 | status      | ModerationStatus |
 | createdByid | UUID             |
+| createdAt   | DateTime         |
 
 **Relacionamentos:**
 
@@ -133,6 +135,7 @@ Representa ingredientes aprovados ou pendentes.
 | name        | String           |
 | status      | ModerationStatus |
 | createdByid | UUID             |
+| createdAt   | DateTime         |
 
 **Relacionamentos:**
 

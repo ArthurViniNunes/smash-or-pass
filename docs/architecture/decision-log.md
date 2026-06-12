@@ -399,20 +399,89 @@ A exclusão de um usuário remove automaticamente todo conteúdo associado a ele
 - Negativas
   - Perda de dados associada à exclusão do usuário.
 
+### ADR-015 — Dashboard baseado em agregações
+
+**Status:**
+
+- Aceita
+
+**Contexto:**
+Necessidade de métricas administrativas.
+
+**Decisão:**
+Utilizar agregações em tempo real sobre os dados existentes.
+
+**Consequências:**
+
+- Positivas
+  - Não requer tabela específica.
+  - Mantém consistência dos dados.
+- Negativas
+  - Pode ter impacto de performance em grandes volumes de dados.
+
+### ADR-016 — Swagger como documentação operacional da API
+
+**Status:**
+
+- Aceita
+
+**Contexto:**
+Necessidade de documentação clara e atualizada da API para facilitar desenvolvimento frontend e manutenção.
+
+**Decisão:**
+Utilizar Swagger/OpenAPI para documentar os endpoints da API, garantindo que a documentação esteja sempre alinhada com a implementação.
+
+**Consequências:**
+
+- Positivas
+  - Facilita entendimento e uso da API.
+  - Permite geração automática de clientes e testes.
+- Negativas
+  - Aumenta a complexidade na manutenção da documentação.
+  - Pode exigir recursos adicionais para a geração e manutenção do Swagger.
+  - Requer disciplina para manter a documentação atualizada.
+
+### ADR-017 — Centralização das regras de ownership em helpers reutilizáveis
+
+**Status:**
+
+- Aceita
+
+**Contexto:**
+Regras de ownership (ex: "apenas o autor ou administradores podem editar uma receita") são recorrentes e espalhadas por diversos endpoints, o que pode levar a inconsistências e código duplicado.
+
+**Decisão:**
+Centralizar as regras de ownership em funções helper reutilizáveis, garantindo que a lógica de autorização seja consistente em toda a aplicação e facilitando a manutenção futura.
+
+**Consequências:**
+
+- Positivas
+  - Reduz código duplicado.
+  - Garante consistência nas regras de autorização.
+  - Facilita manutenção e futuras alterações nas regras de ownership.
+  - Melhora a legibilidade do código dos endpoints, delegando a lógica de autorização para helpers específicos.
+- Negativas
+  - Requer disciplina para utilizar os helpers em todos os endpoints relevantes.
+  - Pode aumentar a complexidade inicial da implementação, mas traz benefícios a longo prazo.
+
 ## Histórico
 
-| ADR     | Título                                    | Status |
-| ------- | ----------------------------------------- | ------ |
-| ADR-001 | Arquitetura Cliente-Servidor              | Aceita |
-| ADR-002 | Backend em Node.js com TypeScript         | Aceita |
-| ADR-003 | Utilização do Prisma ORM                  | Aceita |
-| ADR-004 | PostgreSQL como Banco Principal           | Aceita |
-| ADR-005 | Armazenamento de Imagens por Upload       | Aceita |
-| ADR-006 | Autenticação JWT                          | Aceita |
-| ADR-007 | Controle de Acesso por Papéis (RBAC)      | Aceita |
-| ADR-008 | Promoção de Administradores Fora da API   | Aceita |
-| ADR-009 | Moderação de Conteúdo                     | Aceita |
-| ADR-010 | Ingredientes como Entidades Independentes | Aceita |
-| ADR-011 | Sistema Smash/Pass                        | Aceita |
-| ADR-012 | Undo da Última Interação                  | Aceita |
-| ADR-013 | Documentação como Parte da Entrega        | Aceita |
+| ADR     | Título                                                         | Status |
+| ------- | -------------------------------------------------------------- | ------ |
+| ADR-001 | Arquitetura Cliente-Servidor                                   | Aceita |
+| ADR-002 | Backend em Node.js com TypeScript                              | Aceita |
+| ADR-003 | Utilização do Prisma ORM                                       | Aceita |
+| ADR-004 | PostgreSQL como Banco Principal                                | Aceita |
+| ADR-005 | Armazenamento de Imagens por Upload                            | Aceita |
+| ADR-006 | Autenticação JWT                                               | Aceita |
+| ADR-007 | Controle de Acesso por Papéis (RBAC)                           | Aceita |
+| ADR-008 | Promoção de Administradores Fora da API                        | Aceita |
+| ADR-009 | Moderação de Conteúdo                                          | Aceita |
+| ADR-010 | Ingredientes como Entidades Independentes                      | Aceita |
+| ADR-011 | Sistema Smash/Pass                                             | Aceita |
+| ADR-012 | Undo da Última Interação                                       | Aceita |
+| ADR-013 | Documentação como Parte da Entrega                             | Aceita |
+| ADR-014 | Exclusão de Usuários Remove Conteúdo Associado                 | Aceita |
+| ADR-015 | Dashboard baseado em agregações                                | Aceita |
+| ADR-016 | Swagger como documentação operacional da API                   | Aceita |
+| ADR-017 | Centralização das regras de ownership em helpers reutilizáveis | Aceita |
