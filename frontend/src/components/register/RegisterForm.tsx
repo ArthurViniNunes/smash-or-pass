@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import InputField from "@/components/ui/InputField";
 import SubmitButton from "@/components/ui/SubmitButton";
 import styles from "./RegisterForm.module.css";
+import { authService } from "@/services/auth.service";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -46,20 +47,7 @@ export default function RegisterForm() {
 
     setLoading(true);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, username, email, password }),
-        }
-      );
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.message ?? "Não foi possível criar a conta.");
-      }
-
+      await authService.register({ name, username, email, password });
       router.push("/login");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro inesperado.");

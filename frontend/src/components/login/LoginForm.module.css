@@ -1,0 +1,34 @@
+.form {
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 14px;
+  background: #f87a5d; /* coral do painel */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.error {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.registerHint {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.registerLink {
+  color: #b5277c;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.registerLink:hover { text-decoration: underline; }
