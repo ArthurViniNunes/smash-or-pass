@@ -112,4 +112,32 @@ export class UsersService {
       userId
     );
   }
+
+  async getSmashs(userId: string) {
+    const smashs = await prisma.recipeInteraction.findMany({
+      where: {
+        userId,
+        type: "SMASH",
+      },
+      include: {
+        recipe: {
+          include: {
+            createdBy: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                avatarUrl: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return smashs;
+  }
 }

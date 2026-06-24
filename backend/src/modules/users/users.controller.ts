@@ -104,4 +104,21 @@ export class UsersController {
       next(error);
     }
   };
+
+  getSmashs = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const data =
+        await this.service.getSmashs(
+          req.user!.id
+        );
+
+      return res.json(data);
+    } catch (error) {
+      next(error);
+    }
+  };
 }

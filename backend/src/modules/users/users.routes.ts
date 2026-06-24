@@ -295,4 +295,47 @@ router.put(
   controller.updateDietPreferences
 );
 
+/**
+ * @openapi
+ * /users/me/smashs:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Obter receitas smashadas pelo usuário autenticado
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de receitas smashadas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   createdBy:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       username:
+ *                         type: string
+*                       avatarUrl:
+*                         type: string
+ */
+router.get(
+  '/me/smashs',
+  authMiddleware,
+  controller.getSmashs
+);
+
 export default router;
