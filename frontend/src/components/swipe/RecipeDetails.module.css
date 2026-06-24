@@ -1,0 +1,18 @@
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.divider {
+	height: 1px;
+	background: #ececec;
+	width: 100%;
+}
+
+.placeholder {
+	color: #6b6b6b;
+	font-size: 0.95rem;
+	text-align: center;
+	margin-top: 40px;
+}
