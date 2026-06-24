@@ -13,6 +13,7 @@
 	font-weight: 600;
 	color: #4a4a4a;
 	cursor: pointer;
+	white-space: nowrap;
 	transition: all 0.15s ease;
 }
 
@@ -25,4 +26,23 @@
 	background: #e94b7c;
 	border-color: #e94b7c;
 	color: #fff;
+}
+
+/* Celular: chips em rolagem horizontal (não empilham) */
+@media (max-width: 640px) {
+	.row {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		padding-bottom: 4px;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+	}
+
+	.row::-webkit-scrollbar {
+		display: none;
+	}
+
+	.chip {
+		flex: 0 0 auto;
+	}
 }

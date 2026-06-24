@@ -92,11 +92,13 @@
 
 	.menuWrap {
 		position: fixed;
+		top: auto; /* 👈 mesmo fix: evita o overlay full-screen */
 		left: 0;
 		right: 0;
 		bottom: 0;
 		height: auto;
 		z-index: 20;
+		box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
 	}
 
 	.main {

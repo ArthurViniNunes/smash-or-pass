@@ -43,15 +43,24 @@ export default function LikedRecipesPage() {
 		};
 	}, []);
 
+	// Categorias reais presentes nas receitas curtidas (para os chips)
 	const categories = useMemo(() => {
 		const set = new Set<string>();
-		recipes.forEach((recipe) => recipe.tags.forEach((tag) => set.add(tag)));
-		return Array.from(set).sort();
+		recipes.forEach((recipe) => {
+			recipe.tags.forEach((tag) => {
+				const value = tag.trim();
+				if (value) set.add(value);
+			});
+		});
+		return Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
 	}, [recipes]);
 
+	// Filtro por categoria (client-side)
 	const filtered = useMemo(() => {
 		if (activeCategory === "Todos") return recipes;
-		return recipes.filter((recipe) => recipe.tags.includes(activeCategory));
+		return recipes.filter((recipe) =>
+			recipe.tags.some((tag) => tag.trim() === activeCategory)
+		);
 	}, [recipes, activeCategory]);
 
 	return (
@@ -61,7 +70,7 @@ export default function LikedRecipesPage() {
 			</aside>
 
 			<main className={styles.main}>
-				<header className={styles.header}>
+				<header>
 					<h1 className={styles.title}>Curtidas</h1>
 				</header>
 
