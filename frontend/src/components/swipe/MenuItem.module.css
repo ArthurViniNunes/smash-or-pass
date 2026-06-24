@@ -1,0 +1,23 @@
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.item:hover { background: rgba(255, 255, 255, 0.18); }
+
+.active { background: #fff; color: #f87a5d; }
+
+.icon { display: flex; }
+
+.label { font-size: 0.72rem; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .item { transition: none; }
+}

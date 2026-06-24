@@ -1,0 +1,39 @@
+.controls {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 24px;
+}
+
+.button {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	border: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+	transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.button:hover {
+	transform: scale(1.06);
+}
+
+.button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.pass {
+	background: #fff;
+	color: #6b6b6b;
+}
+
+.smash {
+	background: #e94b7c;
+	color: #fff;
+}

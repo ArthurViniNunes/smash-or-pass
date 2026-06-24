@@ -1,0 +1,80 @@
+.section {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.heading {
+	margin: 0;
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: #1a1a1a;
+}
+
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.input {
+	width: 100%;
+	resize: vertical;
+	border: 1px solid #d4d4d4;
+	border-radius: 12px;
+	padding: 10px 12px;
+	font-size: 0.9rem;
+	font-family: inherit;
+	outline: none;
+	transition: border-color 0.15s ease;
+}
+
+.input:focus {
+	border-color: #e94b7c;
+}
+
+.submit {
+	align-self: flex-end;
+	border: none;
+	border-radius: 999px;
+	padding: 8px 18px;
+	background: #e94b7c;
+	color: #fff;
+	font-weight: 600;
+	font-size: 0.85rem;
+	cursor: pointer;
+	transition: opacity 0.15s ease;
+}
+
+.submit:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.locked {
+	margin: 0;
+	padding: 10px 12px;
+	border: 1px dashed #d4d4d4;
+	border-radius: 12px;
+	color: #6b6b6b;
+	font-size: 0.85rem;
+	background: #faf7f8;
+}
+
+.error {
+	margin: 0;
+	color: #e94b7c;
+	font-size: 0.85rem;
+}
+
+.state {
+	margin: 0;
+	color: #6b6b6b;
+	font-size: 0.9rem;
+}
+
+.list {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}

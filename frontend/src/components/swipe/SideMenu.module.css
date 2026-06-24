@@ -1,0 +1,19 @@
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  height: 100%;
+  padding: 32px 12px;
+  background: #f87a5d;
+}
+
+@media (max-width: 991px) {
+  .menu {
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 0;
+    height: auto;
+    padding: 8px;
+  }
+}
