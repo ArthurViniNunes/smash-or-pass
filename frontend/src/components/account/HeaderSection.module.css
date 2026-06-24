@@ -1,0 +1,14 @@
+.header { text-align: center; }
+
+.title {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.highlight {
+  background: linear-gradient(90deg, #f97316, #e94b7c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

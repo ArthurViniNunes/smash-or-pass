@@ -15,9 +15,14 @@ export function useAuth() {
     setError("");
     setLoading(true);
     try {
-      const { accessToken } = await authService.login(data);
-      setToken(accessToken);
-      router.push(redirectTo);
+      const response = await authService.login(data);
+      setToken(response.accessToken);
+
+      // decide o destino pelo papel do usuário
+      const destination =
+        response.user.role === "ADMIN" ? "/select-account" : "/swipe";
+
+      router.push(destination);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro inesperado.");
     } finally {
