@@ -122,13 +122,18 @@ export class UsersService {
       include: {
         recipe: {
           include: {
-            createdBy: {
+            author: {
               select: {
                 id: true,
-                name: true,
                 username: true,
                 avatarUrl: true,
               },
+            },
+            categories: {
+              include: { category: true },
+            },
+            ingredients: {
+              include: { ingredient: true },
             },
           },
         },
@@ -138,6 +143,7 @@ export class UsersService {
       },
     });
 
-    return smashs;
+    // devolve as receitas no mesmo formato do /interactions/feed
+    return smashs.map((interaction) => interaction.recipe);
   }
 }
