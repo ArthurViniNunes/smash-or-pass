@@ -1,0 +1,41 @@
+.page {
+	display: grid;
+	grid-template-columns: 104px 1fr;
+	min-height: 100vh;
+	background: #fff;
+}
+
+.menuWrap {
+	position: sticky;
+	top: 0;
+	height: 100vh;
+}
+
+.main {
+	display: flex;
+	justify-content: center;
+	padding: 32px 28px 64px;
+}
+
+/* Mobile: menu vira barra inferior fixa (mesmo fix do top:auto da Tela 7) */
+@media (max-width: 991px) {
+	.page {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.menuWrap {
+		position: fixed;
+		top: auto;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: auto;
+		z-index: 20;
+		box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+	}
+
+	.main {
+		padding: 20px 16px 96px;
+	}
+}

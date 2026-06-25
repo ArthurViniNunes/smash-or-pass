@@ -1,0 +1,21 @@
+.container {
+	width: 100%;
+	max-width: 760px;
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.pageTitle {
+	margin: 0;
+	font-size: 1.5rem;
+	font-weight: 800;
+	color: #1a1a1a;
+}
+
+.state {
+	margin-top: 24px;
+	text-align: center;
+	color: #6b6b6b;
+	font-size: 0.95rem;
+}
