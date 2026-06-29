@@ -34,12 +34,19 @@ export class RecipeInteractionsService {
   }
 
   async feed(userId: string, limit = 10) {
+    // Receitas já interagidas não voltam ao feed
     const interactions = await prisma.recipeInteraction.findMany({
       where: { userId },
       select: { recipeId: true },
     });
-
     const excludedIds = interactions.map((i) => i.recipeId);
+
+    // Alérgenos salvos no perfil excluem receitas automaticamente
+    const userAllergens = await prisma.userAllergen.findMany({
+      where: { userId },
+      select: { allergenId: true },
+    });
+    const blockedAllergenIds = userAllergens.map((a) => a.allergenId);
 
     return prisma.recipe.findMany({
       where: {
@@ -47,6 +54,24 @@ export class RecipeInteractionsService {
         id: {
           notIn: excludedIds,
         },
+        // Esconde receitas com ingrediente ligado a um alérgeno do perfil
+        ...(blockedAllergenIds.length > 0
+          ? {
+              NOT: {
+                ingredients: {
+                  some: {
+                    ingredient: {
+                      allergens: {
+                        some: {
+                          allergenId: { in: blockedAllergenIds },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            }
+          : {}),
       },
       orderBy: {
         createdAt: "desc",
@@ -67,7 +92,15 @@ export class RecipeInteractionsService {
         },
         ingredients: {
           include: {
-            ingredient: true,
+            ingredient: {
+              include: {
+                allergens: {
+                  include: {
+                    allergen: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
