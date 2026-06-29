@@ -1,0 +1,77 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #efeff3;
+  box-shadow: 0 8px 22px rgba(20, 20, 40, 0.05);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.coral .icon {
+  background: #f87a5d;
+}
+.violet .icon {
+  background: #6c5ce7;
+}
+.pink .icon {
+  background: #e94b7c;
+}
+.amber .icon {
+  background: #f0a23b;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.1;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #6b6b6b;
+}
+
+.skeleton {
+  display: inline-block;
+  width: 42px;
+  height: 20px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #ececf1 25%, #f5f5f8 37%, #ececf1 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.3s ease infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
