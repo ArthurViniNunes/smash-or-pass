@@ -108,7 +108,7 @@ O sistema segue o modelo **Cliente-Servidor**, dividido em duas aplicações ind
 
 **Backend:**
 
-Tecnologias:
+Tecnologias principais:
 
 - Node.js
 - TypeScript
