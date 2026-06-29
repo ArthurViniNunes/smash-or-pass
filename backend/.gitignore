@@ -3,3 +3,14 @@ node_modules
 .env
 
 /src/generated/prisma
+
+# Uploads gerados em execução
+uploads/recipes/generated/*
+!uploads/recipes/generated/.gitkeep
+
+uploads/avatars/generated/*
+!uploads/avatars/generated/.gitkeep
+
+# Arquivos temporários
+uploads/tmp/*
+!uploads/tmp/.gitkeep

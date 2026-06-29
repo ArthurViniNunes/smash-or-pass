@@ -121,4 +121,23 @@ export class UsersController {
       next(error);
     }
   };
+
+  updateAvatar = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const file = req.file;
+
+      const user = await this.service.updateAvatar(
+        req.user!.id,
+        file,
+      );
+
+      return res.json(user);
+    } catch (error) {
+      next(error);
+    }
+  };
 }

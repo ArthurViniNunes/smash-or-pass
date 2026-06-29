@@ -8,6 +8,7 @@ import {
 import {
   authMiddleware,
 } from "../../middlewares/auth.middleware";
+import { uploadRecipeImage } from "../../middlewares/upload.middleware";
 
 const router = Router();
 
@@ -136,7 +137,7 @@ const controller =
  *                 updatedAt: 2026-06-10T04:22:33.000Z
  *                 author:
  *                   id: cm1q2w3e4r5t6y7u8i9o0p
- *                   username: artur_silva
+ *                   username: arthur_nunes
  *                   avatarUrl: null
  *                 categories:
  *                   - recipeId: 8d8e9f2b-7b54-4e0b-9b2e-5a7fd0a1d123
@@ -319,7 +320,7 @@ router.get(
  *               updatedAt: 2026-06-10T04:22:33.000Z
  *               author:
  *                 id: cm1q2w3e4r5t6y7u8i9o0p
- *                 username: artur_silva
+ *                 username: arthur_nunes
  *                 avatarUrl: null
  *               categories:
  *                 - recipeId: 8d8e9f2b-7b54-4e0b-9b2e-5a7fd0a1d123
@@ -352,7 +353,7 @@ router.get(
  *                   updatedAt: 2026-06-10T04:22:33.000Z
  *                   user:
  *                     id: cm1q2w3e4r5t6y7u8i9o0p
- *                     username: artur_silva
+ *                     username: arthur_nunes
  *       404:
  *         description: Receita não encontrada
  */
@@ -373,7 +374,7 @@ router.get(
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -410,51 +411,31 @@ router.get(
  *                   - MEDIUM
  *                   - HARD
  *                 example: EASY
+ *               image:
+ *                type: string
+ *                format: binary
+ *                description: Imagem da receita
  *               categoryIds:
- *                 type: array
- *                 minItems: 1
- *                 items:
- *                   type: string
- *                   format: uuid
+ *                type: string
+ *                description: JSON contendo um array de IDs das categorias.
+ *                example: '["7b54-4e0b-9b2e-5a7fd0a1d123"]'
  *               dietPreferenceIds:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: uuid
- *                 default: []
+ *                type: string
+ *                description: JSON contendo um array de IDs das preferências alimentares.
+ *                example: '["6b54-4e0b-9b2e-5a7fd0a1d124"]'
  *               ingredients:
- *                 type: array
- *                 minItems: 1
- *                 items:
- *                   type: object
- *                   required:
- *                     - ingredientId
- *                     - quantity
- *                     - unit
- *                   properties:
- *                     ingredientId:
- *                       type: string
- *                       format: uuid
- *                     quantity:
- *                       type: number
- *                       minimum: 0
- *                     unit:
- *                       type: string
- *                       minLength: 1
+ *                type: string
+ *                description: JSON contendo um array de ingredientes.
+ *                example: '[{"ingredientId":"5b54-4e0b-9b2e-5a7fd0a1d126","quantity":100,"unit":"g"}]'
  *             example:
  *               title: Macarrão ao pesto
- *               description: Receita simples e rápida de macarrão com pesto.
- *               preparationMethod: Cozinhe o macarrão e misture ao molho.
+ *               description: Receita simples e rápida.
+ *               preparationMethod: Cozinhe o macarrão.
  *               preparationTimeMinutes: 25
  *               difficulty: EASY
- *               categoryIds:
- *                 - 7b54-4e0b-9b2e-5a7fd0a1d123
- *               dietPreferenceIds:
- *                 - 6b54-4e0b-9b2e-5a7fd0a1d124
- *               ingredients:
- *                 - ingredientId: 5b54-4e0b-9b2e-5a7fd0a1d126
- *                   quantity: 100
- *                   unit: g
+ *               categoryIds: '["id-category"]'
+ *               dietPreferenceIds: '["id-diet"]'
+ *               ingredients: '[{"ingredientId":"id","quantity":100,"unit":"g"}]'
  *     responses:
  *       201:
  *         description: Receita criada
@@ -517,6 +498,7 @@ router.get(
 router.post(
   "/",
   authMiddleware,
+  uploadRecipeImage,
   controller.create
 );
 
@@ -539,7 +521,7 @@ router.post(
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -576,51 +558,31 @@ router.post(
  *                   - MEDIUM
  *                   - HARD
  *                 example: EASY
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Nova imagem da receita. Opcional.
  *               categoryIds:
- *                 type: array
- *                 minItems: 1
- *                 items:
- *                   type: string
- *                   format: uuid
+ *                 type: string
+ *                 description: JSON contendo um array de IDs das categorias.
+ *                 example: '["7b54-4e0b-9b2e-5a7fd0a1d123"]'
  *               dietPreferenceIds:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: uuid
- *                 default: []
+ *                 type: string
+ *                 description: JSON contendo um array de IDs das preferências alimentares.
+ *                 example: '["6b54-4e0b-9b2e-5a7fd0a1d124"]'
  *               ingredients:
- *                 type: array
- *                 minItems: 1
- *                 items:
- *                   type: object
- *                   required:
- *                     - ingredientId
- *                     - quantity
- *                     - unit
- *                   properties:
- *                     ingredientId:
- *                       type: string
- *                       format: uuid
- *                     quantity:
- *                       type: number
- *                       minimum: 0
- *                     unit:
- *                       type: string
- *                       minLength: 1
+ *                 type: string
+ *                 description: JSON contendo um array de ingredientes.
+ *                 example: '[{"ingredientId":"5b54-4e0b-9b2e-5a7fd0a1d126","quantity":100,"unit":"g"}]'
  *           example:
  *             title: Macarrão ao pesto
- *             description: Receita simples e rápida de macarrão com pesto.
- *             preparationMethod: Cozinhe o macarrão e misture ao molho.
+ *             description: Receita simples e rápida.
+ *             preparationMethod: Cozinhe o macarrão.
  *             preparationTimeMinutes: 25
  *             difficulty: EASY
- *             categoryIds:
- *               - 7b54-4e0b-9b2e-5a7fd0a1d123
- *             dietPreferenceIds:
- *               - 6b54-4e0b-9b2e-5a7fd0a1d124
- *             ingredients:
- *               - ingredientId: 5b54-4e0b-9b2e-5a7fd0a1d126
- *                 quantity: 100
- *                 unit: g
+ *             categoryIds: '["7b54-4e0b-9b2e-5a7fd0a1d123"]'
+ *             dietPreferenceIds: '["6b54-4e0b-9b2e-5a7fd0a1d124"]'
+ *             ingredients: '[{"ingredientId":"5b54-4e0b-9b2e-5a7fd0a1d126","quantity":100,"unit":"g"}]'
  *     responses:
  *       200:
  *         description: Receita atualizada
@@ -687,6 +649,7 @@ router.post(
 router.patch(
   "/:id",
   authMiddleware,
+  uploadRecipeImage,
   controller.update
 );
 

@@ -55,7 +55,7 @@ Exemplo de resposta (200 OK):
     "createdAt": "2026-06-10T04:22:33.000Z",
     "createdBy": {
       "id": "cm1q2w3e4r5t6y7u8i9o0p",
-      "username": "artur_silva"
+      "username": "arthur_nunes"
     }
   }
 ]
@@ -83,7 +83,7 @@ Exemplo de resposta (200 OK):
   "createdAt": "2026-06-10T04:22:33.000Z",
   "createdBy": {
     "id": "cm1q2w3e4r5t6y7u8i9o0p",
-    "username": "artur_silva"
+    "username": "arthur_nunes"
   }
 }
 ```

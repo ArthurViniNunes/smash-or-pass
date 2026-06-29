@@ -43,16 +43,20 @@ Modifica parcialmente os dados de perfil do usuário ativo.
 - **URL**: `/users/me`
 - **Método**: PATCH
 - **Segurança**: Bearer Auth Token
+- **Content-Type**: multipart/form-data
 
 **Corpo da Requisição (Request Body):**
 
-```json
-{
-  "name": "Artur Silva",
-  "bio": "Desenvolvedor apaixonado por produto e UI.",
-  "avatarUrl": "[https://cdn.example.com/avatars/artur.png](https://cdn.example.com/avatars/artur.png)"
-}
-```
+O endpoint aceita dois tipos de dados:
+
+#### Campos JSON (textuais)
+- name (string, min 3 chars)
+- bio (string, max 500 chars)
+
+#### Arquivo (opcional)
+- avatar (file)
+
+O arquivo enviado em `avatar` será processado pelo sistema de upload e armazenado automaticamente.
 
 > Nota: name deve ter no mínimo 3 caracteres e bio no máximo 500 caracteres.
 
@@ -61,11 +65,11 @@ Modifica parcialmente os dados de perfil do usuário ativo.
 ```json
 {
   "id": "cm1q2w3e4r5t6y7u8i9o0p",
-  "name": "Artur Silva",
-  "username": "artur_silva",
-  "email": "artur@example.com",
+  "name": "Arthur Nunes",
+  "username": "arthur_nunes",
+  "email": "arthur@example.com",
   "role": "USER",
-  "avatarUrl": "[https://cdn.example.com/avatars/artur.png](https://cdn.example.com/avatars/artur.png)",
+  "avatarUrl": "/uploads/avatars/avatar-123456.png",
   "bio": "Desenvolvedor apaixonado por produto e UI."
 }
 ```

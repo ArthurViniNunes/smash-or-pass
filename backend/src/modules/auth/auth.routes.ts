@@ -26,14 +26,14 @@ const controller = new AuthController();
  *             properties:
  *               name:
  *                 type: string
- *                 example: Artur Silva
+ *                 example: Arthur Nunes
  *               username:
  *                 type: string
- *                 example: artur_silva
+ *                 example: arthur_nunes
  *               email:
  *                 type: string
  *                 format: email
- *                 example: artur@example.com
+ *                 example: arthur@example.com
  *               password:
  *                 type: string
  *                 example: Senha@1234
@@ -57,9 +57,9 @@ const controller = new AuthController();
  *                   type: string
  *             example:
  *               id: cm1q2w3e4r5t6y7u8i9o0p
- *               name: Artur Silva
- *               username: artur_silva
- *               email: artur@example.com
+ *               name: Arthur Nunes
+ *               username: arthur_nunes
+ *               email: arthur@example.com
  *               role: USER
  *       409:
  *         description: Email ou username já em uso
@@ -86,7 +86,7 @@ router.post("/register", controller.register);
  *               email:
  *                 type: string
  *                 format: email
- *                 example: artur@example.com
+ *                 example: arthur@example.com
  *               password:
  *                 type: string
  *                 example: Senha@1234
@@ -109,15 +109,27 @@ router.post("/register", controller.register);
  *                       type: string
  *                     username:
  *                       type: string
+ *                     email:
+ *                       type: string
+ *                       format: email
  *                     role:
  *                       type: string
+ *                     avatarUrl:
+ *                       type: string
+ *                       nullable: true
+ *                     bio:
+ *                       type: string
+ *                       nullable: true
  *             example:
  *               accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *               user:
  *                 id: cm1q2w3e4r5t6y7u8i9o0p
- *                 name: Artur Silva
- *                 username: artur_silva
+ *                 name: Arthur Nunes
+ *                 username: arthur_nunes
+ *                 email: arthur@example.com
  *                 role: USER
+ *                 avatarUrl: /uploads/avatars/seed/admin-avatar.webp
+ *                 bio: Desenvolvedor Full Stack do Smash or Pass.
  *       401:
  *         description: Credenciais inválidas
  */
@@ -158,9 +170,9 @@ router.post("/login", controller.login);
  *                   nullable: true
  *             example:
  *               id: cm1q2w3e4r5t6y7u8i9o0p
- *               name: Artur Silva
- *               username: artur_silva
- *               email: artur@example.com
+ *               name: Arthur Nunes
+ *               username: arthur_nunes
+ *               email: arthur@example.com
  *               role: USER
  *               avatarUrl: null
  *               bio: null

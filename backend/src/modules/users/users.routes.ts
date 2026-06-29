@@ -3,6 +3,7 @@ import { Router } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 
 import { UsersController } from "./users.controller";
+import { uploadAvatar } from "../../middlewares/upload.middleware";
 
 const router = Router();
 
@@ -27,22 +28,22 @@ const controller = new UsersController();
  *               name:
  *                 type: string
  *                 minLength: 3
- *                 example: Artur Silva
+ *                 example: Arthur Nunes
  *               bio:
  *                 type: string
  *                 maxLength: 500
- *                 example: Desenvolvedor apaixonado por produto e UI.
+ *                 example: Desenvolvedor Full Stack apaixonado pelo produto.
  *               avatarUrl:
  *                 type: string
  *                 format: uri
- *                 example: https://cdn.example.com/avatars/artur.png
+ *                 example: /uploads/avatars/seed/admin-avatar.webp
  *     responses:
  *       200:
- *         description: Perfil atualizado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
+ *        description: Perfil atualizado com sucesso
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
  *               properties:
  *                 id:
  *                   type: string
@@ -60,14 +61,14 @@ const controller = new UsersController();
  *                 bio:
  *                   type: string
  *                   nullable: true
- *             example:
- *               id: cm1q2w3e4r5t6y7u8i9o0p
- *               name: Artur Silva
- *               username: artur_silva
- *               email: artur@example.com
- *               role: USER
- *               avatarUrl: https://cdn.example.com/avatars/artur.png
- *               bio: Desenvolvedor apaixonado por produto e UI.
+ *              example:
+ *                id: cm1q2w3e4r5t6y7u8i9o0p
+ *                name: Arthur Nunes
+ *                username: arthur_nunes
+ *                email: arthur@example.com
+ *                role: USER
+ *                avatarUrl: /uploads/avatars/8f73c4b8.webp
+ *                bio: Desenvolvedor Full Stack apaixonado pelo produto.
  *       401:
  *         description: Token ausente ou inválido
  *       404:
@@ -336,6 +337,66 @@ router.get(
   '/me/smashs',
   authMiddleware,
   controller.getSmashs
+);
+
+/**
+ * @openapi
+ * /users/me/avatar:
+ *   patch:
+ *     tags:
+ *       - Users
+ *     summary: Atualizar avatar do usuário autenticado
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - avatar
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: Arquivo de imagem (JPEG, PNG ou WebP) que será utilizado como novo avatar do usuário.
+ *     responses:
+ *       200:
+ *         description: Avatar atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *                 avatarUrl:
+ *                   type: string
+ *                   nullable: true
+ *                 bio:
+ *                   type: string
+ *                   nullable: true
+ *       400:
+ *         description: Arquivo inválido ou não enviado
+ *       401:
+ *         description: Não autenticado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+router.patch(
+    "/me/avatar",
+    authMiddleware,
+    uploadAvatar,
+    controller.updateAvatar,
 );
 
 export default router;

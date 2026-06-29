@@ -18,6 +18,7 @@ import {
   getAuthUser,
 } from "../../utils/get-auth-user";
 
+import { normalizeMultipartBody } from "../../utils/normalize-multipart-body";
 export class RecipesController {
   private service =
     new RecipesService();
@@ -31,15 +32,17 @@ export class RecipesController {
       const user =
         getAuthUser(req);
 
+      const body =
+        normalizeMultipartBody(req.body);
+
       const data =
-        createRecipeSchema.parse(
-          req.body
-        );
+        createRecipeSchema.parse(body);
 
       const recipe =
         await this.service.create(
           user.id,
-          data
+          data,
+          req.file,
         );
 
       return res
@@ -120,17 +123,19 @@ export class RecipesController {
       const user =
         getAuthUser(req);
 
+      const body =
+        normalizeMultipartBody(req.body);
+
       const data =
-        updateRecipeSchema.parse(
-          req.body
-        );
+        updateRecipeSchema.parse(body);
 
       const recipe =
         await this.service.update(
           id,
           user.id,
           user.role,
-          data
+          data,
+          req.file,
         );
 
       return res.json(recipe);

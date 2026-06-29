@@ -1,8 +1,16 @@
 import { prisma } from "../../lib/prisma";
 
+import { LocalStorageProvider } from "../../storage/local-storage-provider";
+import { StorageService } from "../../storage/storage.service";
+import { UploadFolder } from "../../storage/types";
+
 import { UpdateProfileDto } from "./users.schemas";
 
 export class UsersService {
+  private storage = new StorageService(
+    new LocalStorageProvider()
+  );
+
   async updateProfile(
     userId: string,
     data: UpdateProfileDto
@@ -145,5 +153,66 @@ export class UsersService {
 
     // devolve as receitas no mesmo formato do /interactions/feed
     return smashs.map((interaction) => interaction.recipe);
+  }
+
+  async updateAvatar(
+    userId: string,
+    file?: Express.Multer.File
+  ) {
+    if (!file) {
+      throw new Error("Avatar image is required.");
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        id: userId,
+        },
+        select: {
+          id: true,
+          avatarUrl: true,
+        },
+    });
+
+    if (!existingUser) {
+      throw new Error("User not found.");
+    }
+
+    const uploaded = await this.storage.upload(
+      {
+        buffer: file.buffer,
+        originalName: file.originalname,
+        mimeType: file.mimetype,
+      },
+      UploadFolder.AVATARS,
+    );
+
+    const user = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        avatarUrl: uploaded.url,
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        role: true,
+        avatarUrl: true,
+        bio: true,
+      },
+    });
+
+    if (existingUser.avatarUrl) {
+      try {
+        await this.storage.remove(existingUser.avatarUrl);
+      } catch {
+        // Não interrompe a requisição.
+        // O banco já foi atualizado.
+      }
+    }
+
+    return user;
   }
 }

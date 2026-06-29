@@ -12,120 +12,177 @@ import {
   validateRecipeOwnership,
 } from "../../utils/validate-recipe-ownership";
 import { RoleName } from "../../generated/prisma";
+import { LocalStorageProvider } from "../../storage/local-storage-provider";
+import { StorageService } from "../../storage/storage.service";
+import { UploadFolder } from "../../storage/types";
 
 export class RecipesService {
-  async create(
-    userId: string,
-    data: CreateRecipeDto
+
+  private storage = new StorageService(
+    new LocalStorageProvider()
+  );
+
+  private async validateCategories(
+    categoryIds: string[]
   ) {
-    const categories =
-      await prisma.category.findMany({
-        where: {
-          id: {
-            in: data.categoryIds,
-          },
-
-          status: "APPROVED",
+    const categories = await prisma.category.findMany({
+      where: {
+        id: {
+          in: categoryIds,
         },
-      });
+        status: "APPROVED",
+      },
+    });
 
-    if (
-      categories.length !==
-      data.categoryIds.length
-    ) {
+    if (categories.length !== categoryIds.length) {
       throw new HttpError(
         400,
         "Invalid categories"
       );
     }
+  }
 
-    const ingredients =
+  private async validateIngredients(
+    ingredients: CreateRecipeDto["ingredients"]
+  ) {
+    const existingIngredients =
       await prisma.ingredient.findMany({
         where: {
           id: {
-            in: data.ingredients.map(
-              (item) =>
-                item.ingredientId
+            in: ingredients.map(
+              (item) => item.ingredientId
             ),
           },
-
           status: "APPROVED",
         },
       });
 
     if (
-      ingredients.length !==
-      data.ingredients.length
+      existingIngredients.length !==
+      ingredients.length
     ) {
       throw new HttpError(
         400,
         "Invalid ingredients"
       );
     }
+  }
 
-    return prisma.recipe.create({
-      data: {
-        title: data.title,
-
-        description:
-          data.description,
-
-        preparationMethod:
-          data.preparationMethod,
-
-        preparationTimeMinutes:
-          data.preparationTimeMinutes,
-
-        difficulty:
-          data.difficulty,
-
-        status: "PENDING",
-
-        authorId: userId,
-
-        categories: {
-          create:
-            data.categoryIds.map(
-              (categoryId) => ({
-                categoryId,
-              })
-            ),
-        },
-
-        dietPreferences: {
-          create:
-            data.dietPreferenceIds.map(
-              (
-                dietPreferenceId
-              ) => ({
-                dietPreferenceId,
-              })
-            ),
-        },
-
-        ingredients: {
-          create:
-            data.ingredients.map(
-              (ingredient) => ({
-                ingredientId:
-                  ingredient.ingredientId,
-
-                quantity:
-                  ingredient.quantity,
-
-                unit:
-                  ingredient.unit,
-              })
-            ),
-        },
+  private buildRecipeRelations(
+    data: CreateRecipeDto | UpdateRecipeDto
+  ) {
+    return {
+      categories: {
+        create: data.categoryIds.map(
+          (categoryId) => ({
+            categoryId,
+          })
+        ),
       },
 
-      include: {
-        categories: true,
-        ingredients: true,
-        dietPreferences: true,
+      dietPreferences: {
+        create: data.dietPreferenceIds.map(
+          (dietPreferenceId) => ({
+            dietPreferenceId,
+          })
+        ),
       },
-    });
+
+      ingredients: {
+        create: data.ingredients.map(
+          (ingredient) => ({
+            ingredientId:
+              ingredient.ingredientId,
+
+            quantity:
+              ingredient.quantity,
+
+            unit:
+              ingredient.unit,
+          })
+        ),
+      },
+    };
+  }
+
+  private async uploadRecipeImage(
+    file?: Express.Multer.File
+  ) {
+    if (!file) {
+      return null;
+    }
+
+    return this.storage.upload(
+      {
+        buffer: file.buffer,
+        originalName: file.originalname,
+        mimeType: file.mimetype,
+      },
+      UploadFolder.RECIPES
+    );
+  }
+
+  async create(
+    userId: string,
+    data: CreateRecipeDto,
+    file?: Express.Multer.File
+  ) {
+    await this.validateCategories(
+      data.categoryIds
+    );
+
+    await this.validateIngredients(
+      data.ingredients
+    );
+
+    const uploadedImage =
+      await this.uploadRecipeImage(file);
+
+    try{
+      return prisma.recipe.create({
+        data: {
+          title: data.title,
+
+          description:
+            data.description,
+
+          preparationMethod:
+            data.preparationMethod,
+
+          preparationTimeMinutes:
+            data.preparationTimeMinutes,
+
+          difficulty:
+            data.difficulty,
+
+          status: "PENDING",
+
+          authorId: userId,
+
+          imageUrl: uploadedImage?.url ?? null,
+
+          ...this.buildRecipeRelations(data),
+        },
+        include: {
+          categories: true,
+          ingredients: true,
+          dietPreferences: true,
+        },
+      });
+    }
+    catch (error) {
+      if (uploadedImage) {
+        try {
+          await this.storage.remove(
+            uploadedImage.url
+          );
+        } catch {
+          // Ignora erro na limpeza
+        }
+      }
+
+      throw error;
+    }
   }
 
   async findAll() {
@@ -306,7 +363,8 @@ export class RecipesService {
     recipeId: string,
     userId: string,
     role: RoleName,
-    data: UpdateRecipeDto
+    data: UpdateRecipeDto,
+    file?: Express.Multer.File
   ) {
     await validateRecipeOwnership(
       recipeId,
@@ -314,48 +372,33 @@ export class RecipesService {
       role
     );
 
-    const categories =
-      await prisma.category.findMany({
+    const existingRecipe =
+      await prisma.recipe.findUnique({
         where: {
-          id: {
-            in: data.categoryIds,
-          },
-          status: "APPROVED",
+          id: recipeId,
+        },
+        select: {
+          imageUrl: true,
         },
       });
 
-    if (
-      categories.length !==
-      data.categoryIds.length
-    ) {
+    if (!existingRecipe) {
       throw new HttpError(
-        400,
-        "Invalid categories"
+        404,
+        "Recipe not found."
       );
     }
 
-    const ingredients =
-      await prisma.ingredient.findMany({
-        where: {
-          id: {
-            in: data.ingredients.map(
-              (item) =>
-                item.ingredientId
-            ),
-          },
-          status: "APPROVED",
-        },
-      });
+    await this.validateCategories(
+      data.categoryIds
+    );
 
-    if (
-      ingredients.length !==
-      data.ingredients.length
-    ) {
-      throw new HttpError(
-        400,
-        "Invalid ingredients"
-      );
-    }
+    await this.validateIngredients(
+      data.ingredients
+    );
+
+    const uploadedImage =
+      await this.uploadRecipeImage(file);
 
     await prisma.$transaction([
       prisma.recipeCategory.deleteMany({
@@ -377,6 +420,19 @@ export class RecipesService {
       }),
     ]);
 
+    if (
+      uploadedImage &&
+      existingRecipe.imageUrl
+    ) {
+      try {
+        await this.storage.remove(
+          existingRecipe.imageUrl
+        );
+      } catch {
+        // Ignora erro de limpeza
+      }
+    }
+
     return prisma.recipe.update({
       where: {
         id: recipeId,
@@ -397,41 +453,11 @@ export class RecipesService {
         difficulty:
           data.difficulty,
 
-        categories: {
-          create:
-            data.categoryIds.map(
-              (categoryId) => ({
-                categoryId,
-              })
-            ),
-        },
+        ...(uploadedImage && {
+            imageUrl: uploadedImage.url,
+          }),
 
-        dietPreferences: {
-          create:
-            data.dietPreferenceIds.map(
-              (
-                dietPreferenceId
-              ) => ({
-                dietPreferenceId,
-              })
-            ),
-        },
-
-        ingredients: {
-          create:
-            data.ingredients.map(
-              (ingredient) => ({
-                ingredientId:
-                  ingredient.ingredientId,
-
-                quantity:
-                  ingredient.quantity,
-
-                unit:
-                  ingredient.unit,
-              })
-            ),
-        },
+        ...this.buildRecipeRelations(data)
       },
 
       include: {
@@ -453,10 +479,47 @@ export class RecipesService {
       role
     );
 
-    await prisma.recipe.delete({
+    const recipe = await prisma.recipe.findUnique({
       where: {
         id: recipeId,
       },
+      select: {
+        imageUrl: true,
+      },
     });
+
+    if (!recipe) {
+      throw new HttpError(
+        404,
+        "Recipe not found."
+      );
+    }
+    
+    try {
+      await prisma.recipe.delete({
+        where: {
+          id: recipeId,
+        },
+      });
+
+      if (recipe.imageUrl) {
+        try {
+          await this.storage.remove(
+            recipe.imageUrl
+          );
+        } catch {
+          // Ignora erro ao remover arquivo
+        }
+      }
+    } catch (error) {
+      if (error instanceof HttpError) {
+        throw error;
+      }
+
+      throw new HttpError(
+        500,
+        "Failed to delete recipe."
+      );
+    }
   }
 }

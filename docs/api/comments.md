@@ -57,7 +57,7 @@ Exemplo de resposta (200 OK):
     "updatedAt": "2026-06-12T01:10:00.000Z",
     "user": {
       "id": "cm1q2w3e4r5t6y7u8i9o0p",
-      "username": "artur_silva",
+      "username": "arthur_nunes",
       "avatarUrl": null
     }
   }

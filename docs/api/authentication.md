@@ -45,7 +45,7 @@ Cria uma nova conta de usuário no sistema. Por padrão, todo usuário recém-re
 
 | Campo | Tipo | Validação | Descrição |
 | :--- | :---: | :--- | :--- |
-| name | string | Obrigatório | Nome completo do usuário. |
+| name | string | Obrigatório | Nome de exibição do usuário. |
 | username | string | Obrigatório | Nome de usuário único na plataforma. |
 | email | string | Obrigatório, Formato Email | Endereço de e-mail único. |
 | password | string | Obrigatório | Senha para acesso à conta. |
@@ -54,9 +54,9 @@ Exemplo de requisição:
 
 ```json
 {
-  "name": "Artur Silva",
-  "username": "artur_silva",
-  "email": "artur@example.com",
+  "name": "Arthur Nunes",
+  "username": "arthur_nunes",
+  "email": "arthur@example.com",
   "password": "Senha@1234"
 }
 ```
@@ -66,9 +66,9 @@ Exemplo de requisição:
 ```json
 {
   "id": "cm1q2w3e4r5t6y7u8i9o0p",
-  "name": "Artur Silva",
-  "username": "artur_silva",
-  "email": "artur@example.com",
+  "name": "Arthur Nunes",
+  "username": "arthur_nunes",
+  "email": "arthur@example.com",
   "role": "USER"
 }
 ```
@@ -97,7 +97,7 @@ Exemplo de requisição:
 
 ```json
 {
-  "email": "artur@example.com",
+  "email": "arthur@example.com",
   "password": "Senha@1234"
 }
 ```
@@ -109,22 +109,23 @@ Exemplo de requisição:
   "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
     "id": "cm1q2w3e4r5t6y7u8i9o0p",
-    "name": "Artur Silva",
-    "username": "artur_silva",
+    "name": "Arthur Nunes",
+    "username": "arthur_nunes",
     "role": "USER"
   }
 }
 ```
+> O token é assinado via JWT e possui expiração configurada no backend (não persistente).
 
 **Respostas de Erro Comuns:**
 
-- 401 Unauthorized: Credenciais inválidas (e-mail incorreto ou senha incompatível com o hash salvo).
+- 401 Unauthorized: Credenciais inválidas ou não autenticadas.
 
 ---
 
 ### 3. Obter dados do usuário autenticado
 
-Retorna os detalhes completos do perfil do usuário que está realizando a requisição, com base na identidade extraída do token JWT.
+Retorna os dados básicos da sessão autenticada do usuário com base no token JWT.
 
 - URL: /auth/me
 - Método: GET
@@ -135,16 +136,18 @@ Retorna os detalhes completos do perfil do usuário que está realizando a requi
 ```json
 {
   "id": "cm1q2w3e4r5t6y7u8i9o0p",
-  "name": "Artur Silva",
-  "username": "artur_silva",
-  "email": "artur@example.com",
+  "name": "Arthur Nunes",
+  "username": "arthur_nunes",
+  "email": "arthur@example.com",
   "role": "USER",
   "avatarUrl": null,
   "bio": null
 }
 ```
 
+> Nota: Dados completos de perfil (bio, alergênicos, preferências) são gerenciados no módulo /users.
+
 **Respostas de Erro Comuns:**
 
-- 401 Unauthorized: Token de autenticação ausente, expirado ou com assinatura corrompida.
+- 401 Unauthorized: Token de autenticação ausente, expirado ou com token com assinatura inválida.
 - 404 Not Found: O ID contido no payload do token não corresponde a nenhum usuário ativo na base.

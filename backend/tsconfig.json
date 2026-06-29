@@ -22,6 +22,6 @@
 
   },
 
-  "include": ["src", "tests", "prisma"],
+  "include": ["src", "tests", "prisma", "uploads"],
   "exclude": ["node_modules", "dist"]
 }

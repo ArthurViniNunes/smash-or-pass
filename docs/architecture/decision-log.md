@@ -464,6 +464,70 @@ Centralizar as regras de ownership em funções helper reutilizáveis, garantind
   - Requer disciplina para utilizar os helpers em todos os endpoints relevantes.
   - Pode aumentar a complexidade inicial da implementação, mas traz benefícios a longo prazo.
 
+### ADR-018 - Upload de arquivos via multipart/form-data
+
+**Status:**
+
+- Aceita
+
+**Contexto:**
+O sistema precisa suportar envio de arquivos (imagens de perfil e possivelmente futuras imagens de receitas) junto com dados textuais estruturados.
+
+JSON puro não é suficiente para upload de arquivos binários.
+
+**Decisão:**
+Utilizar multipart/form-data para endpoints que envolvem upload de arquivos, especialmente:
+
+PATCH /users/me (avatar)
+futuros endpoints de upload de mídia
+
+**Consequências:**
+
+- Positivas
+  - Suporte nativo a upload de arquivos no HTTP
+  - Compatível com browsers e clientes mobile
+  - Flexível para expansão futura
+- Negativas
+  - Parsing mais complexo no backend
+  - Necessidade de middleware (ex: multer)
+  - Validação híbrida (arquivo + body)
+
+### ADR-019 - Separação entre Auth Context e User Resource
+
+**Status:**
+
+- Aceita
+
+**Contexto:**
+Existem dois endpoints retornando dados do usuário autenticado:
+
+/auth/me (contexto de sessão)
+/users/me (contexto de perfil)
+
+Isso pode gerar ambiguidade sobre responsabilidade de cada módulo.
+
+**Decisão:**
+Manter separação semântica:
+
+/auth/* >> responsabilidades de autenticação e sessão
+login
+register
+me (session snapshot)
+/users/* >> gerenciamento de recurso usuário
+atualização de perfil
+preferências
+dados estendidos
+
+**Consequências:**
+
+- Positivas
+  - Separação clara de domínio (Auth vs User Management)
+  - Facilita evolução para OAuth / refresh token
+  - Reduz acoplamento semântico
+- Negativas
+  - Dois endpoints retornando parcialmente dados similares
+  - Potencial redundância de DTOs
+
 ## Histórico
 
 | ADR     | Título                                                         | Status |
@@ -485,3 +549,5 @@ Centralizar as regras de ownership em funções helper reutilizáveis, garantind
 | ADR-015 | Dashboard baseado em agregações                                | Aceita |
 | ADR-016 | Swagger como documentação operacional da API                   | Aceita |
 | ADR-017 | Centralização das regras de ownership em helpers reutilizáveis | Aceita |
+| ADR-018 | Upload de arquivos via multipart/form-data | Aceita |
+| ADR-019 | Separação entre Auth Context e User Resource | Aceita |

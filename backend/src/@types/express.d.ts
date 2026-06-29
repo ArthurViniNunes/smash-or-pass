@@ -1,4 +1,5 @@
 import { RoleName } from "../generated/prisma";
+import { UploadFile } from "../storage/types";
 
 declare global {
   namespace Express {
@@ -7,6 +8,7 @@ declare global {
         id: string;
         role: RoleName;
       };
+      uploadFile?: UploadFile;
     }
   }
 }
