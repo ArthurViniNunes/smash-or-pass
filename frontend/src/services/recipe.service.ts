@@ -1,4 +1,4 @@
-import { apiRequest } from "./api";
+import { apiRequest, API_URL } from "./api";
 import type {
 	RecipeView,
 	InteractionType,
@@ -45,6 +45,19 @@ const DIFFICULTY_LABELS: Record<string, string> = {
 	HARD: "Difícil",
 };
 
+/**
+ * O backend grava a imagem como caminho relativo (ex.: /uploads/recipes/generated/x.webp),
+ * servido pela API. Prefixamos com a API_URL para a tag <img> conseguir carregar.
+ * URLs absolutas (http/https) são mantidas como estão.
+ */
+export function resolveImageUrl(
+	url?: string | null
+): string | undefined {
+	if (!url) return undefined;
+	if (/^https?:\/\//i.test(url)) return url;
+	return `${API_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
 function buildIngredientLabel(item: ApiRecipe["ingredients"][number]): string {
 	const quantity = item.quantity ?? "";
 	const unit = item.unit ?? "";
@@ -69,7 +82,7 @@ export function mapRecipe(recipe: ApiRecipe): RecipeView {
 		id: recipe.id,
 		title: recipe.title,
 		subtitle: recipe.description ?? "",
-		imageUrl: recipe.imageUrl ?? undefined,
+		imageUrl: resolveImageUrl(recipe.imageUrl),
 		preparation: recipe.preparationMethod ?? "",
 		difficultyLabel:
 			(recipe.difficulty && DIFFICULTY_LABELS[recipe.difficulty]) ??
@@ -85,6 +98,34 @@ export function mapRecipe(recipe: ApiRecipe): RecipeView {
 		allergens: collectAllergens(recipe.ingredients),
 		authorName: recipe.author?.username ?? "",
 	};
+}
+
+/**
+ * Monta o multipart/form-data esperado pelo backend:
+ * - campos escalares como string
+ * - categoryIds / dietPreferenceIds / ingredients como string JSON
+ * - arquivo opcional no campo "image"
+ */
+function buildRecipeFormData(payload: RecipePayload): FormData {
+	const form = new FormData();
+	form.append("title", payload.title);
+	form.append("description", payload.description);
+	form.append("preparationMethod", payload.preparationMethod);
+	form.append(
+		"preparationTimeMinutes",
+		String(payload.preparationTimeMinutes)
+	);
+	form.append("difficulty", payload.difficulty);
+	form.append("categoryIds", JSON.stringify(payload.categoryIds));
+	form.append(
+		"dietPreferenceIds",
+		JSON.stringify(payload.dietPreferenceIds ?? [])
+	);
+	form.append("ingredients", JSON.stringify(payload.ingredients));
+	if (payload.imageFile) {
+		form.append("image", payload.imageFile);
+	}
+	return form;
 }
 
 export const recipeService = {
@@ -128,20 +169,20 @@ export const recipeService = {
 			.map(mapRecipe);
 	},
 
-	/** Cria uma receita (Tela 11). Nasce com status PENDING. */
+	/** Cria uma receita (Tela 11). Nasce com status PENDING. Envia multipart com a imagem. */
 	async create(payload: RecipePayload): Promise<{ id: string }> {
 		return apiRequest<{ id: string }>("/recipes", {
 			method: "POST",
-			body: payload,
+			body: buildRecipeFormData(payload),
 			auth: true,
 		});
 	},
 
-	/** Atualiza uma receita existente. */
+	/** Atualiza uma receita existente (envia multipart; imagem é opcional). */
 	async update(id: string, payload: RecipePayload): Promise<{ id: string }> {
 		return apiRequest<{ id: string }>(`/recipes/${id}`, {
 			method: "PATCH",
-			body: payload,
+			body: buildRecipeFormData(payload),
 			auth: true,
 		});
 	},

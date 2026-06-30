@@ -1,4 +1,5 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 const TOKEN_KEY = "accessToken";
 
 /* ---------- token helpers ---------- */
@@ -29,10 +30,18 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const { method = "GET", body, auth = false, headers = {} } = options;
 
+  // Quando o body é FormData, deixamos o browser definir o Content-Type
+  // (com o boundary do multipart). Não fazemos JSON.stringify.
+  const isFormData =
+    typeof FormData !== "undefined" && body instanceof FormData;
+
   const finalHeaders: Record<string, string> = {
-    "Content-Type": "application/json",
     ...headers,
   };
+
+  if (!isFormData) {
+    finalHeaders["Content-Type"] = "application/json";
+  }
 
   if (auth) {
     const token = getToken();
@@ -42,7 +51,11 @@ export async function apiRequest<T>(
   const response = await fetch(`${API_URL}${path}`, {
     method,
     headers: finalHeaders,
-    body: body ? JSON.stringify(body) : undefined,
+    body: isFormData
+      ? (body as FormData)
+      : body
+        ? JSON.stringify(body)
+        : undefined,
   });
 
   const data = await response.json().catch(() => null);
