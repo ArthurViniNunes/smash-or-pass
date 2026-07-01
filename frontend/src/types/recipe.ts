@@ -122,6 +122,6 @@ export type RecipePayload = {
 	categoryIds: string[];
 	dietPreferenceIds?: string[];
 	ingredients: RecipeIngredientInput[];
-	/** Ainda não persistido pelo backend (create/update fazem strip). */
-	imageUrl?: string;
+	/** Arquivo de imagem a enviar (multipart). Opcional na edição. */
+	imageFile?: File | null;
 };

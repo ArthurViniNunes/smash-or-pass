@@ -18,8 +18,9 @@ export const createRecipeSchema =
       .string()
       .min(10),
 
+    // multipart envia tudo como string → coerce para number
     preparationTimeMinutes:
-      z.number().int().positive(),
+      z.coerce.number().int().positive(),
 
     difficulty: z.enum([
       "EASY",

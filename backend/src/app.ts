@@ -12,7 +12,15 @@ import { UPLOADS_DIRECTORY } from "./config/upload";
 ensureUploadDirectories();
 const app = express();
 
-app.use(helmet());
+// Por padrão o Helmet envia "Cross-Origin-Resource-Policy: same-origin",
+// o que faz o browser BLOQUEAR as imagens de /uploads quando carregadas
+// pelo frontend (outra origem, ex.: localhost:5173 -> localhost:3000).
+// Liberamos apenas essa política para permitir o uso das imagens cross-origin.
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+);
 app.use(cors());
 
 app.use(express.json());
@@ -22,7 +30,6 @@ app.use(morgan("dev"));
 app.use("/uploads", express.static(UPLOADS_DIRECTORY));
 
 app.use("/docs", swaggerRouter);
-
 
 app.use(routes);
 

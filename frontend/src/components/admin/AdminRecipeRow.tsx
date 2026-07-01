@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import type { AdminRecipe, Difficulty, ModerationStatus } from "@/types/admin";
+import { resolveImageUrl } from "@/services/recipe.service";
 import styles from "./AdminRecipeRow.module.css";
 
 const DIFFICULTY_LABELS: Record<Difficulty, string> = {
@@ -16,7 +17,7 @@ const STATUS_LABELS: Record<ModerationStatus, string> = {
   REJECTED: "Rejeitada",
 };
 
-function thumbStyle(url?: string | null): CSSProperties {
+function thumbStyle(url?: string): CSSProperties {
   return url ? { backgroundImage: `url(${url})` } : {};
 }
 
@@ -38,6 +39,10 @@ export default function AdminRecipeRow({
   onDelete,
 }: AdminRecipeRowProps) {
   const author = recipe.author?.username ?? `#${recipe.authorId.slice(0, 8)}`;
+  // A API devolve a imagem como caminho relativo (/uploads/...); precisamos
+  // prefixar com a API_URL para o browser buscá-la no backend, e não no
+  // próprio frontend.
+  const imageUrl = resolveImageUrl(recipe.imageUrl);
   const statusClass =
     recipe.status === "APPROVED"
       ? styles.statusApproved
@@ -48,10 +53,10 @@ export default function AdminRecipeRow({
   return (
     <article className={styles.row}>
       <div
-        className={`${styles.thumb} ${recipe.imageUrl ? "" : styles.thumbEmpty}`}
-        style={thumbStyle(recipe.imageUrl)}
+        className={`${styles.thumb} ${imageUrl ? "" : styles.thumbEmpty}`}
+        style={thumbStyle(imageUrl)}
       >
-        {recipe.imageUrl ? null : <span aria-hidden="true">🍽</span>}
+        {imageUrl ? null : <span aria-hidden="true">🍽</span>}
       </div>
 
       <div className={styles.info}>

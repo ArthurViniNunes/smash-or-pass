@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useState, type SyntheticEvent } from "react";
+import {
+	useEffect,
+	useRef,
+	useState,
+	type ChangeEvent,
+	type SyntheticEvent,
+} from "react";
 import { useRouter } from "next/navigation";
-import { recipeService } from "@/services/recipe.service";
+import { recipeService, resolveImageUrl } from "@/services/recipe.service";
 import { catalogService } from "@/services/catalog.service";
 import type { CatalogItem, Difficulty, RecipePayload } from "@/types/recipe";
 import styles from "./RecipeForm.module.css";
@@ -24,6 +30,9 @@ const DIFFICULTY_OPTIONS: Array<{ value: Difficulty; label: string }> = [
 	{ value: "HARD", label: "Difícil" },
 ];
 
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB (igual ao backend)
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
 function emptyIngredient(): IngredientRow {
 	return { ingredientId: "", quantity: "", unit: "" };
 }
@@ -36,11 +45,16 @@ export default function RecipeForm({ mode, recipeId }: RecipeFormProps) {
 	const [preparationMethod, setPreparationMethod] = useState("");
 	const [preparationTime, setPreparationTime] = useState("");
 	const [difficulty, setDifficulty] = useState<Difficulty>("EASY");
-	const [imageUrl, setImageUrl] = useState("");
 	const [categoryIds, setCategoryIds] = useState<string[]>([]);
 	const [ingredients, setIngredients] = useState<IngredientRow[]>([
 		emptyIngredient(),
 	]);
+
+	// Imagem
+	const [imageFile, setImageFile] = useState<File | null>(null);
+	const [existingImageUrl, setExistingImageUrl] = useState("");
+	const [previewUrl, setPreviewUrl] = useState("");
+	const objectUrlRef = useRef<string | null>(null);
 
 	const [categories, setCategories] = useState<CatalogItem[]>([]);
 	const [ingredientOptions, setIngredientOptions] = useState<CatalogItem[]>([]);
@@ -77,7 +91,9 @@ export default function RecipeForm({ mode, recipeId }: RecipeFormProps) {
 							: ""
 					);
 					setDifficulty((recipe.difficulty as Difficulty) ?? "EASY");
-					setImageUrl(recipe.imageUrl ?? "");
+					const resolved = resolveImageUrl(recipe.imageUrl) ?? "";
+					setExistingImageUrl(resolved);
+					setPreviewUrl(resolved);
 					setCategoryIds(
 						(recipe.categories ?? []).map((entry) => entry.category.id)
 					);
@@ -107,6 +123,56 @@ export default function RecipeForm({ mode, recipeId }: RecipeFormProps) {
 			active = false;
 		};
 	}, [mode, recipeId]);
+
+	// Libera o object URL ao desmontar
+	useEffect(() => {
+		return () => {
+			if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+		};
+	}, []);
+
+	function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+		const file = event.target.files?.[0] ?? null;
+		setError(null);
+
+		if (file) {
+			if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+				setError("Formato inválido. Use uma imagem JPEG, PNG ou WebP.");
+				event.target.value = "";
+				return;
+			}
+			if (file.size > MAX_IMAGE_SIZE) {
+				setError("A imagem deve ter no máximo 5 MB.");
+				event.target.value = "";
+				return;
+			}
+		}
+
+		// Revoga o preview anterior, se for um object URL
+		if (objectUrlRef.current) {
+			URL.revokeObjectURL(objectUrlRef.current);
+			objectUrlRef.current = null;
+		}
+
+		setImageFile(file);
+
+		if (file) {
+			const url = URL.createObjectURL(file);
+			objectUrlRef.current = url;
+			setPreviewUrl(url);
+		} else {
+			setPreviewUrl(existingImageUrl);
+		}
+	}
+
+	function handleClearImage() {
+		if (objectUrlRef.current) {
+			URL.revokeObjectURL(objectUrlRef.current);
+			objectUrlRef.current = null;
+		}
+		setImageFile(null);
+		setPreviewUrl(existingImageUrl);
+	}
 
 	function toggleCategory(id: string) {
 		setCategoryIds((current) =>
@@ -180,9 +246,8 @@ export default function RecipeForm({ mode, recipeId }: RecipeFormProps) {
 					quantity: Number(row.quantity),
 					unit: row.unit.trim(),
 				})),
+			imageFile,
 		};
-
-		if (imageUrl.trim()) payload.imageUrl = imageUrl.trim();
 
 		try {
 			if (mode === "edit" && recipeId) {
@@ -209,20 +274,46 @@ export default function RecipeForm({ mode, recipeId }: RecipeFormProps) {
 			<h1 className={styles.heading}>{heading}</h1>
 
 			<section className={styles.uploadBox}>
-				<label className={styles.label} htmlFor="imageUrl">
-					URL da imagem (opcional)
-				</label>
-				<input
-					id="imageUrl"
-					className={styles.input}
-					type="url"
-					placeholder="https://…"
-					value={imageUrl}
-					onChange={(event) => setImageUrl(event.target.value)}
-				/>
-				<p className={styles.hint}>
-					O upload de arquivo ainda não é suportado pelo backend; cole uma URL pública.
-				</p>
+				<span className={styles.label}>Imagem da receita</span>
+				<div className={styles.uploadRow}>
+					{previewUrl ? (
+						// eslint-disable-next-line @next/next/no-img-element
+						<img
+							src={previewUrl}
+							alt="Pré-visualização da receita"
+							className={styles.preview}
+						/>
+					) : (
+						<div className={styles.previewPlaceholder}>Sem imagem</div>
+					)}
+
+					<div className={styles.uploadControls}>
+						<label className={styles.fileButton}>
+							{previewUrl ? "Trocar imagem" : "Escolher imagem"}
+							<input
+								type="file"
+								accept="image/jpeg,image/png,image/webp"
+								className={styles.fileInput}
+								onChange={handleFileChange}
+							/>
+						</label>
+
+						{imageFile && (
+							<button
+								type="button"
+								className={styles.clearImage}
+								onClick={handleClearImage}
+							>
+								Remover seleção
+							</button>
+						)}
+
+						<p className={styles.hint}>
+							JPEG, PNG ou WebP · até 5 MB. A imagem é otimizada
+							automaticamente.
+						</p>
+					</div>
+				</div>
 			</section>
 
 			<div className={styles.columns}>
