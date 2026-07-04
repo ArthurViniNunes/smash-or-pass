@@ -11,6 +11,23 @@ export class UsersService {
     new LocalStorageProvider()
   );
 
+  async listUsers() {
+    return prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        role: true,
+        avatarUrl: true,
+        bio: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
   async updateProfile(
     userId: string,
     data: UpdateProfileDto

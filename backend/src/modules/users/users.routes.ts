@@ -1,6 +1,8 @@
 import { Router } from "express";
 
 import { authMiddleware } from "../../middlewares/auth.middleware";
+import { roleMiddleware } from "../../middlewares/role.middleware";
+import { RoleName } from "../../generated/prisma";
 
 import { UsersController } from "./users.controller";
 import { uploadAvatar } from "../../middlewares/upload.middleware";
@@ -8,6 +10,80 @@ import { uploadAvatar } from "../../middlewares/upload.middleware";
 const router = Router();
 
 const controller = new UsersController();
+
+/**
+ * @openapi
+ * /users:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Listar todos os usuários (admin)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de usuários ordenada pelos mais recentes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     format: uuid
+ *                   name:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *                     enum: [USER, ADMIN]
+ *                   avatarUrl:
+ *                     type: string
+ *                     nullable: true
+ *                   bio:
+ *                     type: string
+ *                     nullable: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *             example:
+ *               - id: 1e7c3b2a-9f4d-4c8b-a1e2-3d4f5a6b7c8d
+ *                 name: Arthur Nunes
+ *                 username: arthur_nunes
+ *                 email: arthur@example.com
+ *                 role: USER
+ *                 avatarUrl: /uploads/avatars/8f73c4b8.webp
+ *                 bio: Desenvolvedor Full Stack apaixonado pelo produto.
+ *                 createdAt: 2026-07-04T12:34:56.000Z
+ *                 updatedAt: 2026-07-04T12:34:56.000Z
+ *               - id: 9f8e7d6c-5b4a-3210-fedc-ba9876543210
+ *                 name: Admin
+ *                 username: admin
+ *                 email: admin@smash.com
+ *                 role: ADMIN
+ *                 avatarUrl: null
+ *                 bio: null
+ *                 createdAt: 2026-06-19T09:00:00.000Z
+ *                 updatedAt: 2026-06-19T09:00:00.000Z
+ *       401:
+ *         description: Token ausente ou inválido
+ *       403:
+ *         description: Acesso restrito a administradores
+ */
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware(RoleName.ADMIN),
+  controller.listUsers
+);
 
 /**
  * @openapi

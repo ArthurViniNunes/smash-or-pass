@@ -8,6 +8,11 @@ export type UpdateProfilePayload = {
 };
 
 export const userService = {
+	/** Lista todos os usuários (GET /users, restrito a admin). */
+	async listUsers(): Promise<AuthUser[]> {
+		return apiRequest<AuthUser[]>("/users", { auth: true });
+	},
+
 	/** Atualiza o perfil do usuário autenticado (PATCH /users/me). */
 	async updateProfile(payload: UpdateProfilePayload): Promise<AuthUser> {
 		return apiRequest<AuthUser>("/users/me", {
