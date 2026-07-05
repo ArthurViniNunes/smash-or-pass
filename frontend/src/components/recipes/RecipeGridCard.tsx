@@ -1,21 +1,35 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { RecipeView } from "@/types/recipe";
 import styles from "./RecipeGridCard.module.css";
 
-export default function RecipeGridCard({ recipe }: { recipe: RecipeView }) {
+export default function RecipeGridCard({
+	recipe,
+	footer,
+}: {
+	recipe: RecipeView;
+	// Slot opcional renderizado abaixo do card (irmão do <Link>, nunca aninhado
+	// dentro dele). Permite que cada contexto adicione ações — ex.: "Editar" em
+	// Minhas Receitas — sem o card conhecer essas ações. Curtidas não passa nada.
+	footer?: ReactNode;
+}) {
 	return (
-		<Link href={`/recipes/${recipe.id}`} className={styles.card}>
-			<div className={styles.image} style={buildImageStyle(recipe.imageUrl)} />
-			<div className={styles.body}>
-				<h3 className={styles.title}>{recipe.title}</h3>
-				<p className={styles.meta}>
-					<ClockIcon /> {recipe.timeLabel}
-				</p>
-				<p className={styles.meta}>
-					<LevelIcon /> {recipe.difficultyLabel}
-				</p>
-			</div>
-		</Link>
+		<div className={styles.card}>
+			<Link href={`/recipes/${recipe.id}`} className={styles.link}>
+				<div className={styles.image} style={buildImageStyle(recipe.imageUrl)} />
+				<div className={styles.body}>
+					<h3 className={styles.title}>{recipe.title}</h3>
+					<p className={styles.meta}>
+						<ClockIcon /> {recipe.timeLabel}
+					</p>
+					<p className={styles.meta}>
+						<LevelIcon /> {recipe.difficultyLabel}
+					</p>
+				</div>
+			</Link>
+
+			{footer ? <div className={styles.footer}>{footer}</div> : null}
+		</div>
 	);
 }
 
