@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
 import { clearToken } from "@/services/api";
+import { resolveImageUrl } from "@/services/recipe.service";
 import type { AuthUser } from "@/types/auth";
 import UserBanner from "./UserBanner";
 import SettingsSection, { type SettingOption } from "./SettingsSection";
@@ -101,7 +102,7 @@ export default function ProfileContent() {
 			<h1 className={styles.pageTitle}>Profile</h1>
 
 			<UserBanner
-				avatar={user.avatarUrl ?? undefined}
+				avatar={resolveImageUrl(user.avatarUrl ?? undefined)}
 				name={user.name}
 				username={user.username}
 			/>

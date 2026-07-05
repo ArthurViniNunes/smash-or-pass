@@ -5,7 +5,6 @@ import type { AdminUser } from "@/types/admin";
 export type UpdateProfilePayload = {
 	name?: string;
 	bio?: string;
-	avatarUrl?: string;
 };
 
 export const userService = {
@@ -19,6 +18,22 @@ export const userService = {
 		return apiRequest<AuthUser>("/users/me", {
 			method: "PATCH",
 			body: payload,
+			auth: true,
+		});
+	},
+
+	/**
+	 * Atualiza o avatar do usuário via upload de arquivo
+	 * (PATCH /users/me/avatar, multipart/form-data com o campo "avatar").
+	 * O backend processa a imagem (WebP) e remove o avatar anterior.
+	 */
+	async updateAvatar(file: File): Promise<AuthUser> {
+		const formData = new FormData();
+		formData.append("avatar", file);
+
+		return apiRequest<AuthUser>("/users/me/avatar", {
+			method: "PATCH",
+			body: formData,
 			auth: true,
 		});
 	},

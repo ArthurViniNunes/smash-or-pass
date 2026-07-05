@@ -64,7 +64,6 @@ const controller = new UsersController();
  *                 bio: Desenvolvedor Full Stack apaixonado pelo produto.
  *                 createdAt: 2026-07-04T12:34:56.000Z
  *                 updatedAt: 2026-07-04T12:34:56.000Z
- *               
  *       401:
  *         description: Token ausente ou inválido
  *       403:
@@ -107,11 +106,11 @@ router.get(
  *                 example: /uploads/avatars/seed/admin-avatar.webp
  *     responses:
  *       200:
- *        description: Perfil atualizado com sucesso
- *        content:
- *          application/json:
- *            schema:
- *              type: object
+ *         description: Perfil atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
  *               properties:
  *                 id:
  *                   type: string
@@ -129,14 +128,14 @@ router.get(
  *                 bio:
  *                   type: string
  *                   nullable: true
- *              example:
- *                id: cm1q2w3e4r5t6y7u8i9o0p
- *                name: Arthur Nunes
- *                username: arthur_nunes
- *                email: arthur@example.com
- *                role: USER
- *                avatarUrl: /uploads/avatars/8f73c4b8.webp
- *                bio: Desenvolvedor Full Stack apaixonado pelo produto.
+ *               example:
+ *                 id: cm1q2w3e4r5t6y7u8i9o0p
+ *                 name: Arthur Nunes
+ *                 username: arthur_nunes
+ *                 email: arthur@example.com
+ *                 role: USER
+ *                 avatarUrl: /uploads/avatars/8f73c4b8.webp
+ *                 bio: Desenvolvedor Full Stack apaixonado pelo produto.
  *       401:
  *         description: Token ausente ou inválido
  *       404:
@@ -398,8 +397,8 @@ router.put(
  *                         type: string
  *                       username:
  *                         type: string
-*                       avatarUrl:
-*                         type: string
+ *                       avatarUrl:
+ *                         type: string
  */
 router.get(
   '/me/smashs',
