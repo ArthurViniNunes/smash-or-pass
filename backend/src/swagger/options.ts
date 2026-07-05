@@ -18,6 +18,7 @@ const pathOrder = [
   "/auth/register",
   "/auth/login",
   "/auth/me",
+  "/users",
   "/users/me",
   "/users/me/allergens",
   "/users/me/diet-preferences",

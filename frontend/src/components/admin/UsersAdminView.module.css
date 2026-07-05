@@ -1,0 +1,168 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 1000px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #f87a5d;
+}
+
+.title {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 4px 0 6px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #6b6b6b;
+  margin: 0;
+}
+
+.refresh {
+  flex-shrink: 0;
+  border: 1px solid #e3e3e6;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.16s ease, color 0.16s ease;
+}
+
+.refresh:hover:not(:disabled) {
+  border-color: #f87a5d;
+  color: #f87a5d;
+}
+
+.refresh:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.search {
+  width: 100%;
+  max-width: 360px;
+  border: 1px solid #e3e3e6;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.92rem;
+  padding: 11px 15px;
+  border-radius: 10px;
+  transition: border-color 0.16s ease;
+}
+
+.search:focus {
+  outline: none;
+  border-color: #f87a5d;
+}
+
+.search::placeholder {
+  color: #9a9aa5;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid #ececf1;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
+  padding: 12px 8px;
+  margin-bottom: -1px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #6b6b6b;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+
+.tab:hover {
+  color: #1a1a1a;
+}
+
+.tabActive {
+  color: #f87a5d;
+  border-bottom-color: #f87a5d;
+}
+
+.tabCount {
+  min-width: 22px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #f0f0f4;
+  color: #6b6b6b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabActive .tabCount {
+  background: #fde7e0;
+  color: #f87a5d;
+}
+
+.errorBox {
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #f0d9d4;
+  color: #b8121b;
+  font-size: 0.95rem;
+}
+
+.retry {
+  border: none;
+  background: none;
+  color: #b8121b;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.placeholder {
+  color: #6b6b6b;
+  font-size: 0.98rem;
+  padding: 24px 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+@media (max-width: 720px) {
+  .header {
+    flex-direction: column;
+  }
+
+  .search {
+    max-width: none;
+  }
+}

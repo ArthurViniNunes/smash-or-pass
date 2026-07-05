@@ -6,6 +6,20 @@ import { updateProfileSchema, updateUserAllergensSchema, updateUserDietPreferenc
 export class UsersController {
   private service = new UsersService();
 
+  listUsers = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const users = await this.service.listUsers();
+
+      return res.json(users);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   updateProfile = async (
     req: Request,
     res: Response,
