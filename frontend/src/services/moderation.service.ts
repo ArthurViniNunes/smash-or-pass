@@ -18,6 +18,13 @@ export const moderationService = {
     return apiRequest<AdminRecipe[]>("/recipes");
   },
 
+  // Receitas rejeitadas (admin) — usadas na aba "Rejeitadas".
+  getRejectedRecipes(): Promise<AdminRecipe[]> {
+    return apiRequest<AdminRecipe[]>("/moderation/rejected", {
+      auth: true,
+    });
+  },
+
   // Altera o status de moderação de uma receita.
   setRecipeStatus(id: string, status: ModerationStatus): Promise<AdminRecipe> {
     return apiRequest<AdminRecipe>(`/moderation/recipes/${id}`, {

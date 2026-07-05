@@ -86,16 +86,6 @@ export default function AdminRecipeRow({
             Aprovar
           </button>
         ) : null}
-        {onReject ? (
-          <button
-            type="button"
-            className={`${styles.action} ${styles.reject}`}
-            onClick={onReject}
-            disabled={acting}
-          >
-            Rejeitar
-          </button>
-        ) : null}
         {onMakePending ? (
           <button
             type="button"
@@ -104,6 +94,16 @@ export default function AdminRecipeRow({
             disabled={acting}
           >
             Tornar pendente
+          </button>
+        ) : null}
+        {onReject ? (
+          <button
+            type="button"
+            className={`${styles.action} ${styles.reject}`}
+            onClick={onReject}
+            disabled={acting}
+          >
+            Rejeitar
           </button>
         ) : null}
         {onDelete ? (

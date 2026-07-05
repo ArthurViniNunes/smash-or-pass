@@ -13,6 +13,18 @@ export class ModerationService {
     return { recipes, categories, ingredients };
   }
 
+  async listRejectedRecipes() {
+    return prisma.recipe.findMany({
+      where: { status: "REJECTED" },
+      include: {
+        author: {
+          select: { id: true, username: true, avatarUrl: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
   async moderateRecipe(id: string, status: ModerationStatus) {
     const recipe = await prisma.recipe.findUnique({ where: { id } });
 
