@@ -1,15 +1,25 @@
 "use client";
 
-import { useEffect, useState, type SyntheticEvent } from "react";
+import {
+	useEffect,
+	useRef,
+	useState,
+	type ChangeEvent,
+	type SyntheticEvent,
+} from "react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
 import { userService } from "@/services/user.service";
 import { allergenService } from "@/services/allergen.service";
+import { resolveImageUrl } from "@/services/recipe.service";
 import type { AuthUser } from "@/types/auth";
 import type { Allergen } from "@/types/recipe";
 import styles from "./EditProfileForm.module.css";
 
 const GENDER_OPTIONS = ["Feminino", "Masculino", "Outro", "Prefiro não dizer"];
+
+const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 function buildAvatarStyle(avatar?: string) {
 	if (!avatar) return undefined;
@@ -23,7 +33,14 @@ export default function EditProfileForm() {
 	const [lastName, setLastName] = useState("");
 	const [gender, setGender] = useState("");
 	const [bio, setBio] = useState("");
-	const [avatarUrl, setAvatarUrl] = useState("");
+
+	// Avatar via upload de arquivo
+	const [existingAvatarUrl, setExistingAvatarUrl] = useState("");
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
+	const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
+		undefined
+	);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 	const [loading, setLoading] = useState(true);
 	const [loadError, setLoadError] = useState<string | null>(null);
@@ -54,7 +71,7 @@ export default function EditProfileForm() {
 				setFirstName(parts.shift() ?? "");
 				setLastName(parts.join(" "));
 				setBio(data.bio ?? "");
-				setAvatarUrl(data.avatarUrl ?? "");
+				setExistingAvatarUrl(data.avatarUrl ?? "");
 			} catch (err) {
 				if (active) {
 					setLoadError(
@@ -75,6 +92,17 @@ export default function EditProfileForm() {
 		};
 	}, []);
 
+	// Gera (e limpa) a URL de pré-visualização do arquivo escolhido
+	useEffect(() => {
+		if (!avatarFile) {
+			setAvatarPreview(undefined);
+			return;
+		}
+		const objectUrl = URL.createObjectURL(avatarFile);
+		setAvatarPreview(objectUrl);
+		return () => URL.revokeObjectURL(objectUrl);
+	}, [avatarFile]);
+
 	// Carrega catálogo de alérgenos + os que já estão no perfil
 	useEffect(() => {
 		let active = true;
@@ -93,6 +121,28 @@ export default function EditProfileForm() {
 			active = false;
 		};
 	}, []);
+
+	function handleAvatarChange(event: ChangeEvent<HTMLInputElement>) {
+		const file = event.target.files?.[0];
+		if (!file) return;
+
+		if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+			setError("Formato inválido. Use imagens JPEG, PNG ou WebP.");
+			return;
+		}
+		if (file.size > MAX_AVATAR_SIZE) {
+			setError("A imagem deve ter no máximo 5 MB.");
+			return;
+		}
+
+		setError(null);
+		setAvatarFile(file);
+	}
+
+	function clearAvatarSelection() {
+		setAvatarFile(null);
+		if (fileInputRef.current) fileInputRef.current.value = "";
+	}
 
 	async function toggleAllergen(id: string) {
 		if (allergenBusy.has(id)) return;
@@ -139,14 +189,11 @@ export default function EditProfileForm() {
 		setSaving(true);
 		setError(null);
 
-		const payload: { name: string; bio?: string; avatarUrl?: string } = {
-			name,
-			bio: bio.trim(),
-		};
-		if (avatarUrl.trim()) payload.avatarUrl = avatarUrl.trim();
-
 		try {
-			await userService.updateProfile(payload);
+			await userService.updateProfile({ name, bio: bio.trim() });
+			if (avatarFile) {
+				await userService.updateAvatar(avatarFile);
+			}
 			router.push("/profile");
 		} catch (err) {
 			setError(
@@ -160,6 +207,7 @@ export default function EditProfileForm() {
 	if (loadError) return <p className={styles.state}>{loadError}</p>;
 
 	const previewName = `${firstName} ${lastName}`.trim() || user?.name || "";
+	const avatarToShow = avatarPreview ?? resolveImageUrl(existingAvatarUrl);
 
 	return (
 		<form className={styles.container} onSubmit={handleSubmit}>
@@ -168,9 +216,9 @@ export default function EditProfileForm() {
 			<section className={styles.banner}>
 				<span
 					className={styles.avatar}
-					style={buildAvatarStyle(avatarUrl || user?.avatarUrl || undefined)}
+					style={buildAvatarStyle(avatarToShow)}
 				>
-					{!(avatarUrl || user?.avatarUrl) && (
+					{!avatarToShow && (
 						<span className={styles.initial}>
 							{previewName.charAt(0).toUpperCase()}
 						</span>
@@ -229,17 +277,44 @@ export default function EditProfileForm() {
 				</div>
 
 				<div className={styles.field}>
-					<label className={styles.label} htmlFor="avatarUrl">
-						URL do avatar (opcional)
-					</label>
-					<input
-						id="avatarUrl"
-						className={styles.input}
-						type="url"
-						placeholder="https://…"
-						value={avatarUrl}
-						onChange={(event) => setAvatarUrl(event.target.value)}
-					/>
+					<span className={styles.label}>Foto de perfil</span>
+					<div className={styles.uploadRow}>
+						<span
+							className={styles.preview}
+							style={buildAvatarStyle(avatarToShow)}
+						>
+							{!avatarToShow && (
+								<span className={styles.previewPlaceholder}>
+									{previewName.charAt(0).toUpperCase() || "?"}
+								</span>
+							)}
+						</span>
+						<div className={styles.uploadControls}>
+							<label htmlFor="avatar" className={styles.fileButton}>
+								{avatarFile ? "Trocar imagem" : "Escolher imagem"}
+							</label>
+							<input
+								id="avatar"
+								ref={fileInputRef}
+								className={styles.fileInput}
+								type="file"
+								accept="image/jpeg,image/png,image/webp"
+								onChange={handleAvatarChange}
+							/>
+							{avatarFile && (
+								<button
+									type="button"
+									className={styles.clearImage}
+									onClick={clearAvatarSelection}
+								>
+									Remover seleção
+								</button>
+							)}
+							<p className={styles.helper}>
+								JPEG, PNG ou WebP · até 5 MB
+							</p>
+						</div>
+					</div>
 				</div>
 
 				<div className={styles.field}>

@@ -98,6 +98,69 @@
 	border-color: #f87a5d;
 }
 
+.uploadRow {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.preview {
+	width: 72px;
+	height: 72px;
+	flex: 0 0 auto;
+	border-radius: 50%;
+	background-color: #f1ecfb;
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #e3e3e6;
+}
+
+.previewPlaceholder {
+	font-size: 1.6rem;
+	font-weight: 700;
+	color: #9a9aa5;
+}
+
+.uploadControls {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 6px;
+}
+
+.fileButton {
+	display: inline-block;
+	padding: 10px 16px;
+	border-radius: 10px;
+	background: #f87a5d;
+	color: #fff;
+	font-size: 0.88rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition: background 0.15s ease;
+}
+
+.fileButton:hover {
+	background: #f56a4a;
+}
+
+.fileInput {
+	display: none;
+}
+
+.clearImage {
+	border: none;
+	background: none;
+	padding: 0;
+	color: #b8121b;
+	font-size: 0.82rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
 .allergens {
 	display: flex;
 	flex-direction: column;
