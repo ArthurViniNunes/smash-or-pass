@@ -82,6 +82,12 @@
   height: 20px;
 }
 
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .exit {
   border: none;
   background: rgba(255, 255, 255, 0.16);
@@ -95,6 +101,22 @@
 
 .exit:hover {
   background: rgba(255, 255, 255, 0.26);
+}
+
+.logout {
+  border: none;
+  background: rgba(0, 0, 0, 0.16);
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+
+.logout:hover {
+  background: rgba(0, 0, 0, 0.26);
 }
 
 .main {
@@ -121,7 +143,7 @@
     box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.12);
   }
   .brand,
-  .exit {
+  .actions {
     display: none;
   }
   .nav {

@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { clearToken } from "@/services/api";
 import { HomeIcon, DashboardIcon, RecipesIcon, UsersIcon } from "./AdminIcons";
 import styles from "./AdminShell.module.css";
 
@@ -37,6 +38,11 @@ const NAV_ITEMS: {
 export default function AdminShell({ active, children }: AdminShellProps) {
   const router = useRouter();
 
+  function handleLogout() {
+    clearToken();
+    router.push("/login");
+  }
+
   return (
     <div className={styles.page}>
       <aside className={styles.sidebar}>
@@ -61,13 +67,23 @@ export default function AdminShell({ active, children }: AdminShellProps) {
           ))}
         </nav>
 
-        <button
-          type="button"
-          className={styles.exit}
-          onClick={() => router.push("/select-account")}
-        >
-          ← Trocar conta
-        </button>
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={styles.exit}
+            onClick={() => router.push("/select-account")}
+          >
+            ← Trocar conta
+          </button>
+
+          <button
+            type="button"
+            className={styles.logout}
+            onClick={handleLogout}
+          >
+            Sair
+          </button>
+        </div>
       </aside>
 
       <main className={styles.main}>{children}</main>
