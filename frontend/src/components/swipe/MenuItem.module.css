@@ -16,7 +16,7 @@
 
 .icon { display: flex; }
 
-.label { font-size: 0.72rem; font-weight: 600; }
+.label { font-size: 0.72rem; font-weight: 600; text-align: center; }
 
 @media (prefers-reduced-motion: reduce) {
   .item { transition: none; }

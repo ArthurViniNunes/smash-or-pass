@@ -26,6 +26,17 @@ export function AccountIcon({ size = 22 }: IconProps) {
   );
 }
 
+export function SwitchIcon({ size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 8h14" />
+      <path d="M14 5l3 3-3 3" />
+      <path d="M21 16H7" />
+      <path d="M10 13l-3 3 3 3" />
+    </svg>
+  );
+}
+
 export function CloseIcon({ size = 28 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">

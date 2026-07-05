@@ -1,5 +1,9 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { authService } from "@/services/auth.service";
 import MenuItem from "./MenuItem";
-import { SwipeIcon, LikesIcon, AccountIcon } from "./SwipeIcons";
+import { SwipeIcon, LikesIcon, AccountIcon, SwitchIcon } from "./SwipeIcons";
 import styles from "./SideMenu.module.css";
 
 const MENU_ITEMS = [
@@ -9,6 +13,25 @@ const MENU_ITEMS = [
 ];
 
 export default function SideMenu({ active = "swipe" }: { active?: string }) {
+  // Admins acessam a visão de usuário mas precisam de uma saída para voltar
+  // à seleção de conta — o item só aparece quando o papel é ADMIN.
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    authService
+      .me()
+      .then((user) => {
+        if (mounted) setIsAdmin(user.role === "ADMIN");
+      })
+      .catch(() => {
+        if (mounted) setIsAdmin(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <nav className={styles.menu}>
       {MENU_ITEMS.map((item) => (
@@ -20,6 +43,14 @@ export default function SideMenu({ active = "swipe" }: { active?: string }) {
           active={item.key === active}
         />
       ))}
+
+      {isAdmin && (
+        <MenuItem
+          label="Trocar conta"
+          href="/select-account"
+          icon={<SwitchIcon />}
+        />
+      )}
     </nav>
   );
 }
