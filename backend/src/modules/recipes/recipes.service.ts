@@ -453,6 +453,10 @@ export class RecipesService {
         difficulty:
           data.difficulty,
 
+        // Toda edição reenvia a receita para moderação: o conteúdo mudou,
+        // então precisa ser reavaliado antes de voltar a ficar público.
+        status: "PENDING",
+
         ...(uploadedImage && {
             imageUrl: uploadedImage.url,
           }),

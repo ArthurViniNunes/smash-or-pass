@@ -5,18 +5,26 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SideMenu from "@/components/swipe/SideMenu";
 import RecipeGridCard from "@/components/recipes/RecipeGridCard";
-import CategoryChips from "@/components/recipes/CategoryChips";
-import { authService } from "@/services/auth.service";
+import RecipeStatusBadge from "@/components/recipes/RecipeStatusBadge";
 import { recipeService } from "@/services/recipe.service";
-import type { RecipeView } from "@/types/recipe";
+import type { RecipeStatus, RecipeView } from "@/types/recipe";
 import styles from "./mine.module.css";
+
+type StatusTab = "ALL" | RecipeStatus;
+
+const TABS: { key: StatusTab; label: string }[] = [
+	{ key: "ALL", label: "Todas" },
+	{ key: "PENDING", label: "Pendentes" },
+	{ key: "APPROVED", label: "Aprovadas" },
+	{ key: "REJECTED", label: "Rejeitadas" },
+];
 
 export default function MyRecipesPage() {
 	const router = useRouter();
 	const [recipes, setRecipes] = useState<RecipeView[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [activeCategory, setActiveCategory] = useState("Todos");
+	const [activeTab, setActiveTab] = useState<StatusTab>("ALL");
 
 	useEffect(() => {
 		let active = true;
@@ -25,8 +33,7 @@ export default function MyRecipesPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const me = await authService.me();
-				const mine = await recipeService.getMine(me.id);
+				const mine = await recipeService.getMine();
 				if (active) setRecipes(mine);
 			} catch (err) {
 				if (active) {
@@ -48,25 +55,22 @@ export default function MyRecipesPage() {
 		};
 	}, []);
 
-	// Categorias reais presentes nas receitas (para os chips)
-	const categories = useMemo(() => {
-		const set = new Set<string>();
-		recipes.forEach((recipe) => {
-			recipe.tags.forEach((tag) => {
-				const value = tag.trim();
-				if (value) set.add(value);
-			});
-		});
-		return Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
-	}, [recipes]);
+	// Contagem por status para os selos das tabs
+	const counts = useMemo(
+		() => ({
+			ALL: recipes.length,
+			PENDING: recipes.filter((r) => r.status === "PENDING").length,
+			APPROVED: recipes.filter((r) => r.status === "APPROVED").length,
+			REJECTED: recipes.filter((r) => r.status === "REJECTED").length,
+		}),
+		[recipes]
+	);
 
-	// Filtro por categoria (client-side)
+	// Filtro por status (client-side)
 	const filtered = useMemo(() => {
-		if (activeCategory === "Todos") return recipes;
-		return recipes.filter((recipe) =>
-			recipe.tags.some((tag) => tag.trim() === activeCategory)
-		);
-	}, [recipes, activeCategory]);
+		if (activeTab === "ALL") return recipes;
+		return recipes.filter((recipe) => recipe.status === activeTab);
+	}, [recipes, activeTab]);
 
 	return (
 		<div className={styles.page}>
@@ -87,11 +91,21 @@ export default function MyRecipesPage() {
 				</header>
 
 				{!loading && !error && recipes.length > 0 && (
-					<CategoryChips
-						categories={categories}
-						active={activeCategory}
-						onSelect={setActiveCategory}
-					/>
+					<div className={styles.tabs}>
+						{TABS.map((item) => (
+							<button
+								key={item.key}
+								type="button"
+								className={`${styles.tab} ${
+									activeTab === item.key ? styles.tabActive : ""
+								}`}
+								onClick={() => setActiveTab(item.key)}
+							>
+								{item.label}
+								<span className={styles.tabCount}>{counts[item.key]}</span>
+							</button>
+						))}
+					</div>
 				)}
 
 				{error ? (
@@ -103,13 +117,18 @@ export default function MyRecipesPage() {
 						Você ainda não tem receitas. Crie uma nova receita para começar. 🍽️
 					</p>
 				) : filtered.length === 0 ? (
-					<p className={styles.state}>Nenhuma receita nessa categoria.</p>
+					<p className={styles.state}>Nenhuma receita com esse status.</p>
 				) : (
 					<div className={styles.grid}>
 						{filtered.map((recipe) => (
 							<RecipeGridCard
 								key={recipe.id}
 								recipe={recipe}
+								badge={<RecipeStatusBadge status={recipe.status} />}
+								// Só receitas aprovadas existem na rota pública de detalhe;
+								// pendentes/reprovadas não linkam (opção a). O footer "Editar"
+								// dá ao dono o caminho para revisar/corrigir.
+								linkable={recipe.status === "APPROVED"}
 								footer={
 									<Link
 										href={`/recipes/${recipe.id}/edit`}

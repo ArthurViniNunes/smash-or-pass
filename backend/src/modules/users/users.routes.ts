@@ -409,6 +409,97 @@ router.get(
 
 /**
  * @openapi
+ * /users/me/recipes:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Listar as receitas do usuário autenticado (todos os status)
+ *     description: >-
+ *       Retorna as receitas criadas pelo próprio usuário logado, incluindo as
+ *       PENDING e REJECTED, para que ele acompanhe o status de moderação.
+ *       O escopo por autor é aplicado no servidor.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista das receitas do usuário, das mais recentes para as mais antigas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   title:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   preparationTimeMinutes:
+ *                     type: integer
+ *                   difficulty:
+ *                     type: string
+ *                   imageUrl:
+ *                     type: string
+ *                     nullable: true
+ *                   status:
+ *                     type: string
+ *                     enum: [PENDING, APPROVED, REJECTED]
+ *                   authorId:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *       401:
+ *         description: Token ausente ou inválido
+ */
+router.get(
+  "/me/recipes",
+  authMiddleware,
+  controller.getMyRecipes
+);
+
+/**
+ * @openapi
+ * /users/me/recipes/{id}:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Detalhe de uma receita do próprio usuário (qualquer status)
+ *     description: >-
+ *       Retorna uma receita específica criada pelo próprio usuário logado,
+ *       independentemente do status (PENDING/APPROVED/REJECTED). Usado para
+ *       editar receitas ainda não aprovadas — a rota pública /recipes/{id} só
+ *       expõe receitas aprovadas.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Receita do usuário
+ *       401:
+ *         description: Token ausente ou inválido
+ *       404:
+ *         description: Receita não encontrada ou não pertence ao usuário
+ */
+router.get(
+  "/me/recipes/:id",
+  authMiddleware,
+  controller.getMyRecipeById
+);
+
+/**
+ * @openapi
  * /users/me/avatar:
  *   patch:
  *     tags:

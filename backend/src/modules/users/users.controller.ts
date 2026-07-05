@@ -136,6 +136,41 @@ export class UsersController {
     }
   };
 
+  getMyRecipes = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const data =
+        await this.service.getMyRecipes(
+          req.user!.id
+        );
+
+      return res.json(data);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getMyRecipeById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const data =
+        await this.service.getMyRecipeById(
+          req.user!.id,
+          req.params.id
+        );
+
+      return res.json(data);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   updateAvatar = async (
     req: Request,
     res: Response,

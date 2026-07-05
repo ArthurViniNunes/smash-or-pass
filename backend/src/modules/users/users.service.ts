@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma";
 
+import { HttpError } from "../../utils/http-error";
 import { LocalStorageProvider } from "../../storage/local-storage-provider";
 import { StorageService } from "../../storage/storage.service";
 import { UploadFolder } from "../../storage/types";
@@ -170,6 +171,72 @@ export class UsersService {
 
     // devolve as receitas no mesmo formato do /interactions/feed
     return smashs.map((interaction) => interaction.recipe);
+  }
+
+  async getMyRecipes(userId: string) {
+    // Receitas do próprio autor em TODOS os status (PENDING/APPROVED/REJECTED),
+    // para que o criador acompanhe a moderação. O escopo por autor é feito
+    // aqui no servidor — nunca no cliente.
+    return prisma.recipe.findMany({
+      where: {
+        authorId: userId,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            avatarUrl: true,
+          },
+        },
+        categories: {
+          include: { category: true },
+        },
+        ingredients: {
+          include: { ingredient: true },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }
+
+  async getMyRecipeById(userId: string, recipeId: string) {
+    // Detalhe de uma receita do próprio autor em QUALQUER status — usado para
+    // pré-preencher o formulário de edição. A rota pública /recipes/:id só
+    // devolve APPROVED, então pendentes/reprovadas precisam deste acesso
+    // escopado pelo dono.
+    const recipe = await prisma.recipe.findFirst({
+      where: {
+        id: recipeId,
+        authorId: userId,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            avatarUrl: true,
+          },
+        },
+        categories: {
+          include: { category: true },
+        },
+        dietPreferences: {
+          include: { dietPreference: true },
+        },
+        ingredients: {
+          include: { ingredient: true },
+        },
+      },
+    });
+
+    if (!recipe) {
+      throw new HttpError(404, "Recipe not found");
+    }
+
+    return recipe;
   }
 
   async updateAvatar(
