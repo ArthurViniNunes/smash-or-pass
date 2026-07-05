@@ -55,7 +55,7 @@ const controller = new UsersController();
  *                     type: string
  *                     format: date-time
  *             example:
- *               - id: 1e7c3b2a-9f4d-4c8b-a1e2-3d4f5a6b7c8d
+ *               - id: cm1q2w3e4r5t6y7u8i9o0p
  *                 name: Arthur Nunes
  *                 username: arthur_nunes
  *                 email: arthur@example.com
@@ -64,15 +64,7 @@ const controller = new UsersController();
  *                 bio: Desenvolvedor Full Stack apaixonado pelo produto.
  *                 createdAt: 2026-07-04T12:34:56.000Z
  *                 updatedAt: 2026-07-04T12:34:56.000Z
- *               - id: 9f8e7d6c-5b4a-3210-fedc-ba9876543210
- *                 name: Admin
- *                 username: admin
- *                 email: admin@smash.com
- *                 role: ADMIN
- *                 avatarUrl: null
- *                 bio: null
- *                 createdAt: 2026-06-19T09:00:00.000Z
- *                 updatedAt: 2026-06-19T09:00:00.000Z
+ *               
  *       401:
  *         description: Token ausente ou inválido
  *       403:

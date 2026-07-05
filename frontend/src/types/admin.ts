@@ -37,6 +37,20 @@ export interface AdminRecipe {
   author?: AdminRecipeAuthor;
 }
 
+export type UserRole = "USER" | "ADMIN";
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  role: UserRole;
+  avatarUrl?: string | null;
+  bio?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AdminCatalogItem {
   id: string;
   name: string;
