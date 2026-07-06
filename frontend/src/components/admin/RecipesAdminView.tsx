@@ -35,12 +35,12 @@ export default function RecipesAdminView() {
     return Promise.all([
       moderationService.getPending(),
       moderationService.getApprovedRecipes(),
-      moderationService.getRejectedRecipes(),
+      moderationService.getRejected(),
     ])
       .then(([pendingResult, approvedResult, rejectedResult]) => {
         setPending(pendingResult.recipes);
         setApproved(approvedResult);
-        setRejected(rejectedResult);
+        setRejected(rejectedResult.recipes);
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));

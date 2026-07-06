@@ -48,18 +48,30 @@ router.get("/pending", controller.listPending);
  *   get:
  *     tags:
  *       - Moderation
- *     summary: Listar receitas rejeitadas
+ *     summary: Listar itens rejeitados
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Lista de receitas com status REJECTED
+ *         description: Lista de itens rejeitados
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
+ *               type: object
+ *               properties:
+ *                 recipes:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 ingredients:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *        
  */
 router.get("/rejected", controller.listRejected);
 
