@@ -12,6 +12,13 @@ export const moderationService = {
       auth: true,
     });
   },
+  
+  // Itens rejeitados (admin): { recipes, categories, ingredients }
+  getRejected(): Promise<PendingModerationResult> {
+    return apiRequest<PendingModerationResult>("/moderation/rejected", {
+      auth: true,
+    });
+  },
 
   // Receitas aprovadas (rota pública) — usadas na aba "Aprovadas".
   getApprovedRecipes(): Promise<AdminRecipe[]> {

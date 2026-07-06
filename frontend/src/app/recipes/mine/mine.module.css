@@ -50,6 +50,57 @@
 	opacity: 0.95;
 }
 
+/* Tabs de filtro por status — mesmo visual do painel administrativo. */
+.tabs {
+	display: flex;
+	gap: 6px;
+	border-bottom: 1px solid #ececf1;
+}
+
+.tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	border: none;
+	background: none;
+	padding: 12px 8px;
+	margin-bottom: -1px;
+	font-size: 0.98rem;
+	font-weight: 600;
+	color: #6b6b6b;
+	cursor: pointer;
+	border-bottom: 2px solid transparent;
+	transition: color 0.16s ease, border-color 0.16s ease;
+}
+
+.tab:hover {
+	color: #1a1a1a;
+}
+
+.tabActive {
+	color: #f87a5d;
+	border-bottom-color: #f87a5d;
+}
+
+.tabCount {
+	min-width: 22px;
+	height: 20px;
+	padding: 0 7px;
+	border-radius: 999px;
+	background: #f0f0f4;
+	color: #6b6b6b;
+	font-size: 0.75rem;
+	font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.tabActive .tabCount {
+	background: #fde7e0;
+	color: #f87a5d;
+}
+
 .grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));

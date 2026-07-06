@@ -13,6 +13,16 @@ export class ModerationService {
     return { recipes, categories, ingredients };
   }
 
+  async listRejected() {
+    const [recipes, categories, ingredients] = await Promise.all([
+      prisma.recipe.findMany({ where: { status: "REJECTED" } }),
+      prisma.category.findMany({ where: { status: "REJECTED" } }),
+      prisma.ingredient.findMany({ where: { status: "REJECTED" } }),
+    ]);
+
+    return { recipes, categories, ingredients };
+  }
+
   async moderateRecipe(id: string, status: ModerationStatus) {
     const recipe = await prisma.recipe.findUnique({ where: { id } });
 

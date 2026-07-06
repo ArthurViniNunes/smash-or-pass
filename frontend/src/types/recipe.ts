@@ -1,4 +1,5 @@
 export type Difficulty = "EASY" | "MEDIUM" | "HARD";
+export type RecipeStatus = "PENDING" | "APPROVED" | "REJECTED";
 export type InteractionType = "SMASH" | "PASS";
 
 export type ApiAuthor = {
@@ -93,6 +94,7 @@ export type RecipeView = {
 	ingredients: string[];
 	allergens: string[];
 	authorName: string;
+	status: RecipeStatus;
 };
 
 // ===== Alérgenos (catálogo + perfil do usuário) =====

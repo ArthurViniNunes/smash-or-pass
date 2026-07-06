@@ -14,6 +14,15 @@ export class ModerationController {
     }
   };
 
+  listRejected = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.service.listRejected();
+      return res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  };
+
   moderateRecipe = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = moderationIdParamSchema.parse(req.params);

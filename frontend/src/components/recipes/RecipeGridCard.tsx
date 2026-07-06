@@ -6,27 +6,47 @@ import styles from "./RecipeGridCard.module.css";
 export default function RecipeGridCard({
 	recipe,
 	footer,
+	badge,
+	linkable = true,
 }: {
 	recipe: RecipeView;
 	// Slot opcional renderizado abaixo do card (irmão do <Link>, nunca aninhado
 	// dentro dele). Permite que cada contexto adicione ações — ex.: "Editar" em
 	// Minhas Receitas — sem o card conhecer essas ações. Curtidas não passa nada.
 	footer?: ReactNode;
+	// Selo opcional sobreposto à imagem — ex.: status de moderação em Minhas
+	// Receitas. Curtidas não passa nada.
+	badge?: ReactNode;
+	// Quando false, o card não vira link para o detalhe (ex.: receitas
+	// pendentes/reprovadas, que não existem na rota pública). Default: true.
+	linkable?: boolean;
 }) {
+	const content = (
+		<>
+			<div className={styles.image} style={buildImageStyle(recipe.imageUrl)}>
+				{badge ? <div className={styles.badge}>{badge}</div> : null}
+			</div>
+			<div className={styles.body}>
+				<h3 className={styles.title}>{recipe.title}</h3>
+				<p className={styles.meta}>
+					<ClockIcon /> {recipe.timeLabel}
+				</p>
+				<p className={styles.meta}>
+					<LevelIcon /> {recipe.difficultyLabel}
+				</p>
+			</div>
+		</>
+	);
+
 	return (
 		<div className={styles.card}>
-			<Link href={`/recipes/${recipe.id}`} className={styles.link}>
-				<div className={styles.image} style={buildImageStyle(recipe.imageUrl)} />
-				<div className={styles.body}>
-					<h3 className={styles.title}>{recipe.title}</h3>
-					<p className={styles.meta}>
-						<ClockIcon /> {recipe.timeLabel}
-					</p>
-					<p className={styles.meta}>
-						<LevelIcon /> {recipe.difficultyLabel}
-					</p>
-				</div>
-			</Link>
+			{linkable ? (
+				<Link href={`/recipes/${recipe.id}`} className={styles.link}>
+					{content}
+				</Link>
+			) : (
+				<div className={styles.link}>{content}</div>
+			)}
 
 			{footer ? <div className={styles.footer}>{footer}</div> : null}
 		</div>

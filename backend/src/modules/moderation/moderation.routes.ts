@@ -44,6 +44,39 @@ router.get("/pending", controller.listPending);
 
 /**
  * @openapi
+ * /moderation/rejected:
+ *   get:
+ *     tags:
+ *       - Moderation
+ *     summary: Listar itens rejeitados
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de itens rejeitados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 recipes:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 ingredients:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *        
+ */
+router.get("/rejected", controller.listRejected);
+
+/**
+ * @openapi
  * /moderation/recipes/{id}:
  *   patch:
  *     tags:

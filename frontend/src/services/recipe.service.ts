@@ -1,6 +1,7 @@
 import { apiRequest, API_URL } from "./api";
 import type {
 	RecipeView,
+	RecipeStatus,
 	InteractionType,
 	RecipePayload,
 	ApiRecipe as ApiRecipeFull,
@@ -44,6 +45,18 @@ const DIFFICULTY_LABELS: Record<string, string> = {
 	MEDIUM: "Médio",
 	HARD: "Difícil",
 };
+
+const RECIPE_STATUSES: RecipeStatus[] = ["PENDING", "APPROVED", "REJECTED"];
+
+/**
+ * Normaliza o status cru da API para o union tipado. Endpoints públicos
+ * (feed/curtidas) só devolvem receitas aprovadas, então o fallback é APPROVED.
+ */
+function normalizeStatus(value?: string): RecipeStatus {
+	return RECIPE_STATUSES.includes(value as RecipeStatus)
+		? (value as RecipeStatus)
+		: "APPROVED";
+}
 
 /**
  * O backend grava a imagem como caminho relativo (ex.: /uploads/recipes/generated/x.webp),
@@ -97,6 +110,7 @@ export function mapRecipe(recipe: ApiRecipe): RecipeView {
 		ingredients: (recipe.ingredients ?? []).map(buildIngredientLabel),
 		allergens: collectAllergens(recipe.ingredients),
 		authorName: recipe.author?.username ?? "",
+		status: normalizeStatus(recipe.status),
 	};
 }
 
@@ -144,9 +158,13 @@ export const recipeService = {
 		return mapRecipe(data);
 	},
 
-	/** Receita crua (com IDs de categorias/ingredientes) para pré-preencher o form de edição. */
+	/**
+	 * Receita crua (com IDs de categorias/ingredientes) para pré-preencher o
+	 * form de edição. Usa a rota escopada pelo dono, que devolve a receita em
+	 * qualquer status — a pública /recipes/:id só expõe as aprovadas.
+	 */
 	async getRawById(id: string): Promise<ApiRecipeFull> {
-		return apiRequest<ApiRecipeFull>(`/recipes/${id}`, { auth: true });
+		return apiRequest<ApiRecipeFull>(`/users/me/recipes/${id}`, { auth: true });
 	},
 
 	/** Receitas curtidas / smashs do usuário (Tela 7). */
@@ -158,15 +176,15 @@ export const recipeService = {
 	},
 
 	/**
-	 * Receitas criadas pelo usuário (Tela 10).
-	 * Obs.: a API só expõe GET /recipes (apenas APPROVED), então filtramos pelo autor
-	 * no cliente. Receitas PENDING não aparecem até serem aprovadas.
+	 * Receitas criadas pelo usuário (Tela 10), em todos os status
+	 * (PENDING/APPROVED/REJECTED). O backend escopa pelo usuário logado via
+	 * GET /users/me/recipes — o filtro por autor é feito no servidor.
 	 */
-	async getMine(authorId: string): Promise<RecipeView[]> {
-		const data = await apiRequest<ApiRecipe[]>("/recipes", { auth: true });
-		return data
-			.filter((recipe) => (recipe.author?.id ?? recipe.authorId) === authorId)
-			.map(mapRecipe);
+	async getMine(): Promise<RecipeView[]> {
+		const data = await apiRequest<ApiRecipe[]>("/users/me/recipes", {
+			auth: true,
+		});
+		return data.map(mapRecipe);
 	},
 
 	/** Cria uma receita (Tela 11). Nasce com status PENDING. Envia multipart com a imagem. */

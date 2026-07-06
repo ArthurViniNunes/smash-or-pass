@@ -8,7 +8,7 @@ import AdminShell from "./AdminShell";
 import AdminRecipeRow from "./AdminRecipeRow";
 import styles from "./RecipesAdminView.module.css";
 
-type Tab = "pending" | "approved";
+type Tab = "pending" | "approved" | "rejected";
 
 const STATUS_FEEDBACK: Record<ModerationStatus, string> = {
   APPROVED: "aprovada",
@@ -21,6 +21,7 @@ export default function RecipesAdminView() {
 
   const [pending, setPending] = useState<AdminRecipe[]>([]);
   const [approved, setApproved] = useState<AdminRecipe[]>([]);
+  const [rejected, setRejected] = useState<AdminRecipe[]>([]);
   const [tab, setTab] = useState<Tab>("pending");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -34,10 +35,12 @@ export default function RecipesAdminView() {
     return Promise.all([
       moderationService.getPending(),
       moderationService.getApprovedRecipes(),
+      moderationService.getRejected(),
     ])
-      .then(([pendingResult, approvedResult]) => {
+      .then(([pendingResult, approvedResult, rejectedResult]) => {
         setPending(pendingResult.recipes);
         setApproved(approvedResult);
+        setRejected(rejectedResult.recipes);
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
@@ -56,6 +59,10 @@ export default function RecipesAdminView() {
     setApproved((prev) => {
       const without = prev.filter((r) => r.id !== recipe.id);
       return status === "APPROVED" ? [{ ...recipe, status }, ...without] : without;
+    });
+    setRejected((prev) => {
+      const without = prev.filter((r) => r.id !== recipe.id);
+      return status === "REJECTED" ? [{ ...recipe, status }, ...without] : without;
     });
   }
 
@@ -85,6 +92,7 @@ export default function RecipesAdminView() {
       await moderationService.deleteRecipe(recipe.id);
       setPending((prev) => prev.filter((r) => r.id !== recipe.id));
       setApproved((prev) => prev.filter((r) => r.id !== recipe.id));
+      setRejected((prev) => prev.filter((r) => r.id !== recipe.id));
       setFeedback(`Receita "${recipe.title}" excluída.`);
     } catch {
       setFeedback("Não foi possível excluir a receita.");
@@ -93,7 +101,8 @@ export default function RecipesAdminView() {
     }
   }
 
-  const list = tab === "pending" ? pending : approved;
+  const list =
+    tab === "pending" ? pending : tab === "approved" ? approved : rejected;
 
   return (
     <AdminShell active="recipes">
@@ -133,6 +142,14 @@ export default function RecipesAdminView() {
             Aprovadas
             <span className={styles.tabCount}>{approved.length}</span>
           </button>
+          <button
+            type="button"
+            className={`${styles.tab} ${tab === "rejected" ? styles.tabActive : ""}`}
+            onClick={() => setTab("rejected")}
+          >
+            Rejeitadas
+            <span className={styles.tabCount}>{rejected.length}</span>
+          </button>
         </div>
 
         {feedback ? (
@@ -162,7 +179,9 @@ export default function RecipesAdminView() {
           <p className={styles.placeholder}>
             {tab === "pending"
               ? "Nenhuma receita aguardando moderação. 🎉"
-              : "Nenhuma receita aprovada ainda."}
+              : tab === "approved"
+              ? "Nenhuma receita aprovada ainda."
+              : "Nenhuma receita rejeitada."}
           </p>
         ) : (
           <div className={styles.list}>
@@ -173,6 +192,14 @@ export default function RecipesAdminView() {
                   recipe={recipe}
                   acting={actingId === recipe.id}
                   onApprove={() => changeStatus(recipe, "APPROVED")}
+                  onReject={() => changeStatus(recipe, "REJECTED")}
+                />
+              ) : tab === "approved" ? (
+                <AdminRecipeRow
+                  key={recipe.id}
+                  recipe={recipe}
+                  acting={actingId === recipe.id}
+                  onMakePending={() => changeStatus(recipe, "PENDING")}
                   onReject={() => changeStatus(recipe, "REJECTED")}
                 />
               ) : (
@@ -189,8 +216,9 @@ export default function RecipesAdminView() {
         )}
 
         <p className={styles.note}>
-          Observação: o backend não expõe listagem de receitas rejeitadas, então elas
-          não aparecem aqui — rejeitar apenas altera o status da receita.
+          Observação: rejeitar apenas altera o status da receita (reversível) — ela
+          continua na aba &quot;Rejeitadas&quot;. Já &quot;Excluir&quot; remove a receita
+          em definitivo.
         </p>
       </div>
     </AdminShell>
