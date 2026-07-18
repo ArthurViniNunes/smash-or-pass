@@ -68,6 +68,7 @@ async function main() {
       passwordHash,
       role: RoleName.ADMIN,
       bio: "Administrador do sistema",
+      avatarUrl: "/uploads/avatars/seed/admin-avatar.webp",
     },
   });
 
@@ -77,6 +78,7 @@ async function main() {
         name: "Arthur",
         username: "arthur",
         email: "arthur@email.com",
+        avatarUrl: "/uploads/avatars/seed/default-avatar.webp",
         passwordHash,
       },
     }),
@@ -87,6 +89,7 @@ async function main() {
         username: "maria",
         email: "maria@email.com",
         passwordHash,
+        avatarUrl: "/uploads/avatars/seed/default-avatar.webp",
       },
     }),
 
@@ -96,6 +99,7 @@ async function main() {
         username: "joao",
         email: "joao@email.com",
         passwordHash,
+        avatarUrl: "/uploads/avatars/seed/default-avatar.webp",
       },
     }),
 
@@ -105,6 +109,7 @@ async function main() {
         username: "ana",
         email: "ana@email.com",
         passwordHash,
+        avatarUrl: "/uploads/avatars/seed/default-avatar.webp",
       },
     }),
 
@@ -114,6 +119,7 @@ async function main() {
         username: "pedro",
         email: "pedro@email.com",
         passwordHash,
+        avatarUrl: "/uploads/avatars/seed/default-avatar.webp",
       },
     }),
   ]);
@@ -368,39 +374,83 @@ async function main() {
 
   console.log("🍽️ Criando receitas...");
 
-  const recipeTitles = [
-    "Bolo de Chocolate",
-    "Macarrão ao Molho Branco",
-    "Frango Fitness",
-    "Hambúrguer Artesanal",
-    "Panqueca de Banana",
-    "Arroz com Brócolis",
-    "Tofu Grelhado",
-    "Brownie Caseiro",
-    "Café Proteico",
-    "Batata Assada",
-    "Carne Acebolada",
-    "Lasanha",
-    "Cookie de Aveia",
-    "Vitamina de Banana",
-    "Risoto Simples",
-    "Wrap Fitness",
-    "Torta de Maçã",
-    "Frango ao Alho",
-    "Macarrão Vegano",
-    "Brigadeiro Fit",
+  const recipeSeeds = [
+    {
+      title: "Bolo de Chocolate",
+      imageUrl: "/uploads/recipes/seed/bolo-chocolate.webp",
+    },
+    {
+      title: "Macarrão ao Molho Branco",
+      imageUrl: "/uploads/recipes/seed/macarrao.webp",
+    },
+    {
+      title: "Salada Caesar",
+      imageUrl: "/uploads/recipes/seed/salada-caesar.webp",
+    },
+    {
+      title: "Frango Fitness",
+    },
+    {
+      title: "Hambúrguer Artesanal",
+    },
+    {
+      title: "Panqueca de Banana",
+    },
+    {
+      title: "Arroz com Brócolis",
+    },
+    {
+      title: "Tofu Grelhado",
+    },
+    {
+      title: "Brownie Caseiro",
+    },
+    {
+      title: "Café Proteico",
+    },
+    {
+      title: "Batata Assada",
+    },
+    {
+      title: "Carne Acebolada",
+    },
+    {
+      title: "Lasanha",
+    },
+    {
+      title: "Cookie de Aveia",
+    },
+    {
+      title: "Vitamina de Banana",
+    },
+    {
+      title: "Risoto Simples",
+    },
+    {
+      title: "Wrap Fitness",
+    },
+    {
+      title: "Torta de Maçã",
+    },
+    {
+      title: "Macarrão Vegano",
+    },
+    {
+      title: "Brigadeiro Fit",
+    },
   ];
 
   const recipes = [];
 
-  for (let i = 0; i < recipeTitles.length; i++) {
+  for (let i = 0; i < recipeSeeds.length; i++) {
     const author =
       allUsers[i % allUsers.length];
 
     const recipe =
       await prisma.recipe.create({
         data: {
-          title: recipeTitles[i],
+          title: recipeSeeds[i].title,
+          imageUrl: recipeSeeds[i].imageUrl ?? null,
 
           description:
             `Descrição da receita ${i + 1}`,

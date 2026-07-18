@@ -1,114 +1,120 @@
 # Smash or Pass
 
-## 📌 Descrição
+#### Video Demo: https://youtu.be/u6gNtyVILso
 
-O **Smash or Pass** é uma aplicação web inspirada no modelo de interação do Tinder, aplicada ao domínio culinário.
+#### Description:
 
-A plataforma permite que usuários descubram novas receitas por meio de interações simples de interesse (**Smash**) ou desinteresse (**Pass**), além de possibilitar o cadastro, gerenciamento e compartilhamento de receitas próprias.
+![Homepage](docs/home-image.png)
 
-O projeto foi desenvolvido como trabalho final da disciplina de Desenvolvimento de Software para Web, aplicando conceitos de:
+## 📌 Description
 
-- Arquitetura Cliente-Servidor
-- APIs REST
-- Autenticação e Autorização
-- Persistência de Dados
-- Documentação de Software
-- Desenvolvimento Full Stack
+**Smash or Pass** is a web application inspired by the Tinder interaction model, applied to the culinary domain.
+
+The platform allows users to discover new recipes through simple interest (**Smash**) or disinterest (**Pass**) interactions, as well as register, manage, and share their own recipes.
+
+The project was developed as the final assignment for the Web Software Development course, applying concepts of:
+
+- Client-Server Architecture
+- REST APIs
+- Authentication and Authorization
+- Data Persistence
+- Software Documentation
+- Full Stack Development
 
 ---
 
-## 🎯 Objetivo
+## 🎯 Objective
 
-Desenvolver uma aplicação web completa composta por frontend, backend e banco de dados, demonstrando boas práticas de desenvolvimento e documentação de software.
+To develop a complete web application composed of frontend, backend, and database, demonstrating good software development and documentation practices.
 
 ---
 
-## ⚙️ Principais Funcionalidades
+## ⚙️ Main Features
 
-### 🔐 Autenticação
+### 🔐 Authentication
 
-- Cadastro de usuários
-- Login com JWT
-- Controle de acesso por papéis (RBAC)
+- User registration
+- JWT login
+- Role-based access control (RBAC)
 
-### 🍽️ Receitas
+### 🍽️ Recipes
 
-- Cadastro de receitas
-- Edição de receitas próprias
-- Exclusão de receitas próprias
-- Upload de imagens
-- Moderação de conteúdo
+- Recipe registration
+- Editing own recipes
+- Deleting own recipes
+- Image upload
+- Content moderation
 
 ### 🔥 Smash or Pass
 
-- Curtir receitas (Smash)
-- Rejeitar receitas (Pass)
-- Desfazer última interação
-- Priorização de receitas ainda não avaliadas
+- Like recipes (Smash)
+- Reject recipes (Pass)
+- Undo last interaction
+- Prioritization of recipes not yet evaluated
 
-### 💬 Comentários
+### 💬 Comments
 
-- Criação de comentários
-- Edição de comentários próprios
-- Exclusão de comentários próprios
+- Comment creation
+- Editing own comments
+- Deleting own comments
 
-### 🏷️ Catálogo
+### 🏷️ Catalog
 
-- Categorias
-- Ingredientes
-- Preferências alimentares
-- Alergênicos
+- Categories
+- Ingredients
+- Dietary preferences
+- Allergens
 
-### 🛠️ Administração
+### 🛠️ Administration
 
-- Aprovação de receitas
-- Aprovação de ingredientes
-- Aprovação de categorias
-- Dashboard administrativo
+- Recipe approval
+- Ingredient approval
+- Category approval
+- Administrative dashboard
 
 ---
 
-## 📚 Documentação
+## 📚 Documentation
 
-Toda a documentação do projeto encontra-se na pasta `docs/`.
+All project documentation is located in the `docs/` folder.
 
-### Arquitetura
+### Architecture
 
-| Documento                             | Descrição                      |
-|---------------------------------------|--------------------------------|
-| `docs/architecture/erd.md`            | Modelo entidade-relacionamento |
-| `docs/architecture/business-rules.md` | Regras de negócio              |
-| `docs/architecture/enums.md`          | Enums do sistema               |
-| `docs/architecture/conventions.md`    | Convenções arquiteturais       |
+| Document                             | Description                    |
+|--------------------------------------|--------------------------------|
+| `docs/architecture/erd.md`           | Entity-relationship model      |
+| `docs/architecture/business-rules.md`| Business rules                 |
+| `docs/architecture/enums.md`         | System enums                   |
+| `docs/architecture/conventions.md`   | Architectural conventions      |
 
-### Banco de Dados
+### Database
 
-| Documento                        | Descrição                              |
-|----------------------------------|----------------------------------------|
-| `docs/database/prisma-schema.md` | Estrutura do banco e mapeamento Prisma |
-| `docs/database/indexes.md`       | Índices e otimizações                  |
+| Document                        | Description                           |
+|----------------------------------|---------------------------------------|
+| `docs/database/prisma-schema.md` | Database structure and Prisma mapping |
+| `docs/database/indexes.md`       | Indexes and optimizations             |
 
 ### API
 
-| Documento                    | Descrição                  |
-|------------------------------|----------------------------|
-| `docs/api/authentication.md` | Autenticação e autorização |
-| `docs/api/users.md`          | Endpoints de usuários      |
-| `docs/api/recipes.md`        | Endpoints de receitas      |
-| `docs/api/interactions.md`   | Endpoints de Smash/Pass    |
-| `docs/api/comments.md`       | Endpoints de comentários   |
-| `docs/api/moderation.md`     | Endpoints administrativos  |
-| `docs/api/dashboard.md`      | Dashboard e métricas       |
+| Document                    | Description                 |
+|----------------------------|-----------------------------|
+| `docs/api/authentication.md` | Authentication and authorization |
+| `docs/api/users.md`          | User endpoints              |
+| `docs/api/recipes.md`        | Recipe endpoints            |
+| `docs/api/interactions.md`   | Smash/Pass endpoints        |
+| `docs/api/comments.md`       | Comment endpoints           |
+| `docs/api/moderation.md`     | Administrative endpoints    |
+| `docs/api/dashboard.md`      | Dashboard and metrics       |
 
 ---
 
-## 🧱 Arquitetura
+## 🧱 Architecture
 
-O sistema segue o modelo **Cliente-Servidor**, dividido em duas aplicações independentes.
+The system follows the **Client-Server** model, divided into two independent applications.
 
 **Backend:**
 
-Tecnologias principais:
+Main technologies:
 
 - Node.js
 - TypeScript
@@ -119,7 +125,7 @@ Tecnologias principais:
 - Bcrypt
 - Swagger/OpenAPI
 
-Arquitetura em camadas:
+Layered architecture:
 
 ```text
 Routes
@@ -135,18 +141,18 @@ Database
 
 **Frontend:**
 
-Tecnologias:
+Technologies:
 
 - React
 - TypeScript
 - Axios
 - React Router
 
-Arquitetura baseada em componentes reutilizáveis.
+Architecture based on reusable components.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Technologies Used
 
 **Backend:**
 
@@ -159,13 +165,13 @@ Arquitetura baseada em componentes reutilizáveis.
 - Bcrypt
 - Swagger/OpenAPI
 
-**Backend:**
+**Frontend:**
 
 - React
 - TypeScript
 - Axios
 
-### Ferramentas
+### Tools
 
 - Git
 - GitHub
@@ -174,9 +180,9 @@ Arquitetura baseada em componentes reutilizáveis.
 
 ---
 
-## 🚀 Como Executar
+## 🚀 How to Run
 
-### Pré-requisitos
+### Prerequisites
 
 - Node.js
 - PostgreSQL
@@ -197,13 +203,13 @@ npx prisma db seed
 npm run dev
 ```
 
-Backend disponível em:
+Backend available at:
 
 ```text
 http://localhost:3000
 ```
 
-Swagger disponível em:
+Swagger available at:
 
 ```text
 http://localhost:3000/docs
@@ -221,7 +227,7 @@ npm install
 npm run dev
 ```
 
-Frontend disponível em:
+Frontend available at:
 
 ```text
 http://localhost:5173
@@ -229,7 +235,7 @@ http://localhost:5173
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```text
 smash-or-pass/
@@ -265,13 +271,13 @@ smash-or-pass/
 
 ---
 
-## 📊 Status do Projeto
+## 📊 Project Status
 
-**Em desenvolvimento.**
+**In development.**
 
 ---
 
-## 👨‍💻 Equipe
+## 👨‍💻 Team
 
 - [Arthur Vinicius Carneiro Nunes](https://github.com/ArthurViniNunes)
 - [João Igor Almeida Gomes](https://github.com/Igoxrx)
@@ -280,14 +286,14 @@ smash-or-pass/
 
 ---
 
-## 🤝 Contribuição
+## 🤝 Contribution
 
-Antes de realizar alterações no projeto, consulte:
+Before making changes to the project, consult:
 
 - `CONTRIBUTING.md`
 
 ---
 
-## 📄 Licença
+## 📄 License
 
-Este projeto está licenciado sob a [licença MIT](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
