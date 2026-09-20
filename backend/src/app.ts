@@ -8,6 +8,7 @@ import routes from "./routes";
 import swaggerRouter from "./swagger";
 import { ensureUploadDirectories } from "./utils/ensure-upload-directories";
 import { UPLOADS_DIRECTORY } from "./config/upload";
+import { auditLogMiddleware } from "./middlewares/audit-log.middleware";
 
 ensureUploadDirectories();
 const app = express();
@@ -46,6 +47,8 @@ app.use(morgan("dev"));
 app.use("/uploads", express.static(UPLOADS_DIRECTORY));
 
 app.use("/docs", swaggerRouter);
+
+app.use(auditLogMiddleware);
 
 app.use(routes);
 
