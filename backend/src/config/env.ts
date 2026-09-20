@@ -21,6 +21,7 @@ const envSchema = z.object({
 
   AWS_REGION: z.string().default("us-east-1"),
   AWS_S3_BUCKET: z.string().optional(),
+  AWS_SQS_IMAGE_QUEUE_URL: z.string().url().optional(),
 });
 
 export const env = envSchema.parse(process.env);

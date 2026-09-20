@@ -7,6 +7,7 @@ import {
 } from "@aws-sdk/client-s3";
 
 import { env } from "../config/env";
+import { ImageProcessingQueue } from "../queue/image-processing-queue";
 import type { StorageProvider } from "./storage-provider";
 import type {
   StoredFile,
@@ -22,6 +23,7 @@ const FILE_EXTENSIONS: Record<string, string> = {
 
 export class S3StorageProvider implements StorageProvider {
   private readonly client: S3Client;
+  private readonly queue: ImageProcessingQueue;
   private readonly bucket: string;
 
   constructor() {
@@ -36,6 +38,8 @@ export class S3StorageProvider implements StorageProvider {
     this.client = new S3Client({
       region: env.AWS_REGION,
     });
+
+    this.queue = new ImageProcessingQueue();
   }
 
   async save(
@@ -48,14 +52,40 @@ export class S3StorageProvider implements StorageProvider {
     const filename = `${randomUUID()}.${extension}`;
     const key = `smash-or-pass/${folder}/${filename}`;
 
-    await this.client.send(
-      new PutObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-        Body: file.buffer,
-        ContentType: file.mimeType,
-      })
-    );
+    let uploaded = false;
+
+    try {
+      await this.client.send(
+        new PutObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+          Body: file.buffer,
+          ContentType: file.mimeType,
+          Metadata: {
+            processed: "false",
+          },
+        })
+      );
+
+      uploaded = true;
+
+      await this.queue.enqueue({
+        bucket: this.bucket,
+        key,
+        mimeType: file.mimeType,
+      });
+    } catch (error) {
+      if (uploaded) {
+        await this.removeByKey(key).catch((cleanupError) => {
+          console.error(
+            "Failed to remove an orphaned S3 object:",
+            cleanupError
+          );
+        });
+      }
+
+      throw error;
+    }
 
     return {
       filename,
@@ -70,6 +100,10 @@ export class S3StorageProvider implements StorageProvider {
       return;
     }
 
+    await this.removeByKey(key);
+  }
+
+  private async removeByKey(key: string): Promise<void> {
     await this.client.send(
       new DeleteObjectCommand({
         Bucket: this.bucket,
