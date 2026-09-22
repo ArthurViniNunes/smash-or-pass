@@ -23,6 +23,8 @@ const envSchema = z.object({
   AWS_S3_BUCKET: z.string().optional(),
   AWS_SQS_IMAGE_QUEUE_URL: z.string().url().optional(),
   AWS_DYNAMODB_AUDIT_TABLE: z.string().optional(),
+
+  REDIS_URL: z.string().url().optional(),
 });
 
 export const env = envSchema.parse(process.env);

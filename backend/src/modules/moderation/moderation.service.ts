@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/http-error";
 import { ModerationStatus } from "@prisma/client";
+import { recipeCache } from "../../cache/recipe-cache";
 
 export class ModerationService {
   async listPending() {
@@ -23,15 +24,30 @@ export class ModerationService {
     return { recipes, categories, ingredients };
   }
 
-  async moderateRecipe(id: string, status: ModerationStatus) {
-    const recipe = await prisma.recipe.findUnique({ where: { id } });
-
-    if (!recipe) throw new HttpError(404, "Recipe not found");
-
-    return prisma.recipe.update({
+  async moderateRecipe(
+    id: string,
+    status: ModerationStatus
+  ) {
+    const recipe = await prisma.recipe.findUnique({
       where: { id },
-      data: { status },
     });
+
+    if (!recipe) {
+      throw new HttpError(
+        404,
+        "Recipe not found"
+      );
+    }
+
+    const updatedRecipe =
+      await prisma.recipe.update({
+        where: { id },
+        data: { status },
+      });
+
+    await recipeCache.invalidate(id);
+
+    return updatedRecipe;
   }
 
   async moderateCategory(id: string, status: ModerationStatus) {

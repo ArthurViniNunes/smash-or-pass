@@ -15,6 +15,7 @@ import { RoleName } from "@prisma/client";
 import { createStorageProvider } from "../../storage/storage-provider.factory";
 import { StorageService } from "../../storage/storage.service";
 import { UploadFolder } from "../../storage/types";
+import { recipeCache } from "../../cache/recipe-cache";
 
 export class RecipesService {
 
@@ -139,7 +140,7 @@ export class RecipesService {
       await this.uploadRecipeImage(file);
 
     try{
-      return prisma.recipe.create({
+      const recipe = await prisma.recipe.create({
         data: {
           title: data.title,
 
@@ -169,6 +170,10 @@ export class RecipesService {
           dietPreferences: true,
         },
       });
+
+      await recipeCache.invalidate(recipe.id);
+
+      return recipe;
     }
     catch (error) {
       if (uploadedImage) {
@@ -185,106 +190,125 @@ export class RecipesService {
     }
   }
 
-  async findAll() {
-    return prisma.recipe.findMany({
-        where: {
-        status: "APPROVED",
-        },
+    async findAll() {
+    const cachedRecipes =
+      await recipeCache.getList<object[]>();
 
-        include: {
-        author: {
-            select: {
-            id: true,
-            username: true,
-            avatarUrl: true,
-            },
-        },
+    if (cachedRecipes) {
+      return cachedRecipes;
+    }
 
-        categories: {
-            include: {
-            category: true,
-            },
-        },
-
-        dietPreferences: {
-            include: {
-            dietPreference: true,
-            },
-        },
-
-        ingredients: {
-            include: {
-            ingredient: true,
-            },
-        },
-        },
-
-        orderBy: {
-        createdAt: "desc",
-        },
-    });
-  }
-
-  async findById(id: string) {
-  const recipe =
-      await prisma.recipe.findFirst({
+    const recipes = await prisma.recipe.findMany({
       where: {
-          id,
-          status: "APPROVED",
+        status: "APPROVED",
       },
 
       include: {
-          author: {
+        author: {
           select: {
-              id: true,
-              username: true,
-              avatarUrl: true,
+            id: true,
+            username: true,
+            avatarUrl: true,
           },
-          },
+        },
 
-          categories: {
+        categories: {
           include: {
-              category: true,
+            category: true,
           },
-          },
+        },
 
-          dietPreferences: {
+        dietPreferences: {
           include: {
-              dietPreference: true,
+            dietPreference: true,
           },
-          },
+        },
 
-          ingredients: {
+        ingredients: {
           include: {
-              ingredient: true,
+            ingredient: true,
           },
-          },
+        },
+      },
 
-          comments: {
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    await recipeCache.setList(recipes);
+
+    return recipes;
+  }
+
+  async findById(id: string) {
+    const cachedRecipe =
+      await recipeCache.getById<object>(id);
+
+    if (cachedRecipe) {
+      return cachedRecipe;
+    }
+
+    const recipe = await prisma.recipe.findFirst({
+      where: {
+        id,
+        status: "APPROVED",
+      },
+
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            avatarUrl: true,
+          },
+        },
+
+        categories: {
           include: {
-              user: {
+            category: true,
+          },
+        },
+
+        dietPreferences: {
+          include: {
+            dietPreference: true,
+          },
+        },
+
+        ingredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+
+        comments: {
+          include: {
+            user: {
               select: {
-                  id: true,
-                  username: true,
+                id: true,
+                username: true,
               },
-              },
+            },
           },
 
           orderBy: {
-              createdAt: "desc",
+            createdAt: "desc",
           },
-          },
+        },
       },
-      });
+    });
 
-  if (!recipe) {
+    if (!recipe) {
       throw new HttpError(
-      404,
-      "Recipe not found"
+        404,
+        "Recipe not found"
       );
-  }
+    }
 
-  return recipe;
+    await recipeCache.setById(id, recipe);
+
+    return recipe;
   }
 
   async getSwipeFeed(userId: string, cursor?: string) {
@@ -433,7 +457,7 @@ export class RecipesService {
       }
     }
 
-    return prisma.recipe.update({
+    const updatedRecipe = await prisma.recipe.update({
       where: {
         id: recipeId,
       },
@@ -470,6 +494,10 @@ export class RecipesService {
         dietPreferences: true,
       },
     });
+
+    await recipeCache.invalidate(recipeId);
+
+    return updatedRecipe;
   }
 
   async delete(
@@ -498,7 +526,7 @@ export class RecipesService {
         "Recipe not found."
       );
     }
-    
+
     try {
       await prisma.recipe.delete({
         where: {
@@ -515,6 +543,9 @@ export class RecipesService {
           // Ignora erro ao remover arquivo
         }
       }
+
+      await recipeCache.invalidate(recipeId);
+
     } catch (error) {
       if (error instanceof HttpError) {
         throw error;

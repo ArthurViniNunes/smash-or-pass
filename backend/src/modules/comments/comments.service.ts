@@ -3,6 +3,7 @@ import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/http-error";
 import { validateCommentOwnership } from "../../utils/validate-comment-ownership";
 import { CreateCommentDto, UpdateCommentDto } from "./comments.schemas";
+import { recipeCache } from "../../cache/recipe-cache";
 
 export class CommentsService {
 
@@ -34,7 +35,7 @@ export class CommentsService {
       throw new HttpError(404, "Recipe not found");
     }
 
-    return prisma.comment.create({
+    const comment = await prisma.comment.create({
       data: {
         userId,
         recipeId: data.recipeId,
@@ -50,6 +51,10 @@ export class CommentsService {
         },
       },
     });
+
+    await recipeCache.invalidate(data.recipeId);
+
+    return comment;
   }
 
   async findByRecipe(recipeId: string) {
@@ -85,13 +90,19 @@ export class CommentsService {
       currentUserRole,
     });
 
-    return prisma.comment.update({
+    const updatedComment = await prisma.comment.update({
       where: { id },
 
       data: {
         content: data.content,
       },
     });
+
+    await recipeCache.invalidate(
+      comment.recipeId
+    );
+
+    return updatedComment;
   }
 
   async delete(
@@ -111,6 +122,10 @@ export class CommentsService {
     await prisma.comment.delete({
       where: { id },
     });
+
+    await recipeCache.invalidate(
+      comment.recipeId
+    );
 
     return;
   }
