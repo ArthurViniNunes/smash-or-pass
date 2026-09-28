@@ -1,5 +1,7 @@
 # Arquitetura AWS - Smash or Pass
 
+[Video de apresentação](https://youtu.be/_a7nZ6fGKIA)
+
 ## 1. Objetivo deste documento
 
 Este documento explica como e por que cada recurso da AWS é utilizado na adaptação do **Smash or Pass** para o trabalho de Desenvolvimento de Software para Nuvem.
