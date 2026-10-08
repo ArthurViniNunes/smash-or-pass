@@ -1,6 +1,6 @@
 # Arquitetura AWS - Smash or Pass
 
-[Video de apresentação](https://youtu.be/_a7nZ6fGKIA)
+[Video de apresentação](https://youtu.be/_a7nZ6fGKIA?si=o9fawECwJkxvrB5b)
 
 ## 1. Objetivo deste documento
 
