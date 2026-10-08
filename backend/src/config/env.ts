@@ -11,11 +11,20 @@ const envSchema = z.object({
 
   CORS_ORIGINS: z.string().default("http://localhost:5173"),
 
-  STORAGE_PROVIDER: z.enum(["local", "cloudinary"]).default("local"),
+  STORAGE_PROVIDER: z
+    .enum(["local", "cloudinary", "s3"])
+    .default("local"),
 
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
+
+  AWS_REGION: z.string().default("us-east-1"),
+  AWS_S3_BUCKET: z.string().optional(),
+  AWS_SQS_IMAGE_QUEUE_URL: z.string().url().optional(),
+  AWS_DYNAMODB_AUDIT_TABLE: z.string().optional(),
+
+  REDIS_URL: z.string().url().optional(),
 });
 
 export const env = envSchema.parse(process.env);
