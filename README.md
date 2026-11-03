@@ -297,3 +297,8 @@ Before making changes to the project, consult:
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Docker Compose
+
+See the [Docker Compose setup and verification guide](README-ptbr.md#trabalho-2--docker-compose)
+for the PostgreSQL, MinIO, RabbitMQ and AWS DynamoDB configuration.

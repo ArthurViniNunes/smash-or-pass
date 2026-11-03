@@ -295,3 +295,91 @@ Antes de realizar alterações no projeto, consulte:
 ## 📄 Licença
 
 Este projeto está licenciado sob a [licença MIT](LICENSE).
+
+## Trabalho 2 — Docker Compose
+
+Consulte o [guia de desenvolvimento com Docker Compose](docs/docker-compose.md) para entender os serviços, as variáveis e o diagnóstico da stack.
+
+O Compose executa Nginx, frontend, backend, worker de imagens, PostgreSQL 16,
+MinIO e RabbitMQ. O backend aplica as migrations do Prisma na inicialização.
+Backend e worker compartilham a imagem do Dockerfile em `backend/`. O frontend
+tem seu próprio Dockerfile. A imagem do MinIO é compilada de revisões fixadas do servidor e do cliente oficiais no primeiro build.
+
+1. Instale Docker com Compose v2 e clone o projeto.
+
+   ```sh
+   git clone https://github.com/ArthurViniNunes/smash-or-pass.git
+   cd smash-or-pass
+   cp .env.compose.example .env.compose
+   ```
+
+   No PowerShell, use `Copy-Item .env.compose.example .env.compose`.
+
+2. Confira o DynamoDB na conta e região indicadas em `.env.compose`. Use a
+   tabela existente ou, se ela tiver sido removida, crie uma com chave de
+   partição `id` do tipo String. Com a AWS CLI autenticada, use:
+
+   ```sh
+   aws dynamodb create-table --region us-east-1 --table-name smash-or-pass-audit --attribute-definitions AttributeName=id,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --billing-mode PAY_PER_REQUEST
+   aws dynamodb wait table-exists --region us-east-1 --table-name smash-or-pass-audit
+   ```
+
+   Preencha `AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY` em `.env.compose`,
+   e `AWS_SESSION_TOKEN` se as credenciais forem temporárias. A aplicação
+   precisa de `dynamodb:PutItem` na tabela. A identidade usada para conferir
+   os registros precisa de `dynamodb:Scan`. O arquivo com as credenciais
+   fica fora do Git.
+
+3. Suba a stack e acesse http://localhost. Para rodar em outro endereço,
+   ajuste `CORS_ORIGINS` para a origem pública. Se trocar as senhas do
+   PostgreSQL e do RabbitMQ, atualize também as URLs correspondentes.
+   Use senhas de desenvolvimento apenas na execução local.
+
+   ```sh
+   docker compose --env-file .env.compose up --build -d
+   docker compose --env-file .env.compose ps -a
+   curl http://localhost/health
+   ```
+
+4. Para preencher um banco novo com categorias, ingredientes e dados de
+   demonstração, defina `SEED_PASSWORD` e rode o seed uma vez. O seed apaga os
+   dados existentes antes de inserir os exemplos.
+
+   ```sh
+   docker compose --env-file .env.compose exec backend npx prisma db seed
+   ```
+
+### Verificação para a entrega
+
+- Cadastre um usuário e publique uma receita com imagem. Abra a receita
+  novamente e confirme que o navegador recebe a imagem em `/api/media/`.
+  O Nginx encaminha a leitura ao MinIO e o backend envia a imagem para o
+  bucket `recipe-images`.
+- Confira o processamento da imagem e as filas.
+
+  ```sh
+  docker compose --env-file .env.compose logs image-worker
+  docker compose --env-file .env.compose exec rabbitmq rabbitmqctl list_queues name messages_ready messages_unacknowledged
+  ```
+
+  O worker confirma a mensagem após gravar a imagem processada no MinIO.
+  Falhas repetidas são encaminhadas à fila `image-processing-failed`.
+
+- Consulte os registros de auditoria das operações no DynamoDB.
+
+  ```sh
+  aws dynamodb scan --region us-east-1 --table-name smash-or-pass-audit --max-items 5
+  ```
+
+- Pare e suba os containers novamente para confirmar a persistência da
+  receita e da imagem. O Compose usa volumes para PostgreSQL, MinIO e RabbitMQ.
+
+  ```sh
+  docker compose --env-file .env.compose down
+  docker compose --env-file .env.compose up -d
+  ```
+
+O PostgreSQL começa com o esquema das migrations. Uma restauração de dados
+do RDS e a cópia de objetos antigos do S3 exigem backups desses recursos.
+A arquitetura do Trabalho 1 está registrada em
+[Arquitetura AWS](docs/aws-services-architecture.md).

@@ -19,6 +19,8 @@ A documentação está organizada por domínio para facilitar manutenção, nave
 
 ## Estrutura da Documentação
 
+- [Docker Compose](docker-compose.md) — arquitetura local, configuração e diagnóstico do Trabalho 2.
+
 ```text
 docs/
 ├── README.md
