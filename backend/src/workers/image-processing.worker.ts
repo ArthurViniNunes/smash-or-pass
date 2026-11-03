@@ -13,6 +13,8 @@ import {
 
 import sharp from "sharp";
 
+import { IMAGE_QUEUE, withImageChannel } from "../queue/rabbitmq";
+import { createObjectClient } from "../storage/object-client";
 import { env } from "../config/env";
 import type {
   ImageProcessingJob,
@@ -58,11 +60,11 @@ function parseJob(body?: string): ImageProcessingJob {
 class ImageProcessingWorker {
   private readonly s3: S3Client;
   private readonly sqs: SQSClient;
-  private readonly queueUrl: string;
+  private readonly queueUrl?: string;
   private running = true;
 
   constructor() {
-    if (!env.AWS_SQS_IMAGE_QUEUE_URL) {
+    if (!env.RABBITMQ_URL && !env.AWS_SQS_IMAGE_QUEUE_URL) {
       throw new Error(
         "AWS_SQS_IMAGE_QUEUE_URL is required by the image worker."
       );
@@ -70,9 +72,7 @@ class ImageProcessingWorker {
 
     this.queueUrl = env.AWS_SQS_IMAGE_QUEUE_URL;
 
-    this.s3 = new S3Client({
-      region: env.AWS_REGION,
-    });
+    this.s3 = createObjectClient();
 
     this.sqs = new SQSClient({
       region: env.AWS_REGION,
@@ -88,6 +88,11 @@ class ImageProcessingWorker {
 
     while (this.running) {
       try {
+        if (env.RABBITMQ_URL) {
+          await this.pollRabbitMQ(env.RABBITMQ_URL);
+          continue;
+        }
+
         const response = await this.sqs.send(
           new ReceiveMessageCommand({
             QueueUrl: this.queueUrl,
@@ -110,6 +115,29 @@ class ImageProcessingWorker {
     }
 
     console.log("Image processing worker stopped.");
+  }
+
+  private async pollRabbitMQ(url: string): Promise<void> {
+    await withImageChannel(url, async (channel) => {
+      while (this.running) {
+        const message = await channel.get(IMAGE_QUEUE, { noAck: false });
+        if (!message) {
+          await delay(1000);
+          continue;
+        }
+
+        try {
+          const job = parseJob(message.content.toString());
+          await this.processImage(job);
+          channel.ack(message);
+          console.log(`Processed image: ${job.key}`);
+        } catch (error) {
+          console.error("RabbitMQ image processing failed:", error);
+          channel.nack(message, false, true);
+          await delay(RETRY_DELAY_MILLISECONDS);
+        }
+      }
+    });
   }
 
   private async handleMessage(message: Message): Promise<void> {

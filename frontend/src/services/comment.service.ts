@@ -1,4 +1,5 @@
 import { apiRequest } from "./api";
+import { resolveImageUrl } from "./recipe.service";
 import { ApiComment, RecipeComment } from "@/types/recipe";
 
 function formatTimeAgo(iso: string): string {
@@ -21,7 +22,7 @@ export function mapComment(api: ApiComment): RecipeComment {
 	return {
 		id: api.id,
 		author: api.user?.username ?? "Usuário",
-		avatarUrl: api.user?.avatarUrl ?? undefined,
+		avatarUrl: resolveImageUrl(api.user?.avatarUrl),
 		timeAgo: formatTimeAgo(api.createdAt),
 		text: api.content,
 	};

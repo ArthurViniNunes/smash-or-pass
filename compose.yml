@@ -4,7 +4,14 @@ services:
     build:
       context: ./backend
     env_file:
-      - .env.production
+      - .env.compose
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
     command:
       - sh
       - -c
@@ -16,11 +23,16 @@ services:
   image-worker:
     image: smash-or-pass-backend:latest
     env_file:
-      - .env.production
+      - .env.compose
     command:
       - node
       - dist/src/workers/image-processing.worker.js
     restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      disable: true
     stop_grace_period: 30s
     networks:
       - application
@@ -34,6 +46,74 @@ services:
     restart: unless-stopped
     networks:
       - application
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: smash_or_pass
+      POSTGRES_USER: smash
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smash -d smash_or_pass"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [application]
+
+  minio:
+    image: smash-or-pass-minio:local
+    build: ./deploy/minio
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio-data:/data
+    restart: unless-stopped
+    networks: [application]
+
+  minio-init:
+    image: smash-or-pass-minio:local
+    pull_policy: never
+    depends_on:
+      minio:
+        condition: service_started
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD}
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        for attempt in $(seq 1 30); do
+          if mc alias set store http://minio:9000 "$${MINIO_ROOT_USER}" "$${MINIO_ROOT_PASSWORD}"; then
+            mc mb --ignore-existing store/recipe-images
+            mc anonymous set download store/recipe-images
+            exit 0
+          fi
+          sleep 2
+        done
+        exit 1
+    networks: [application]
+
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: smash
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?set RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    hostname: rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks: [application]
 
   nginx:
     image: nginx:alpine
@@ -53,3 +133,7 @@ services:
 networks:
   application:
     driver: bridge
+volumes:
+  postgres-data:
+  minio-data:
+  rabbitmq-data:

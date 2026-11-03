@@ -3,9 +3,10 @@ import { randomUUID } from "node:crypto";
 import {
   DeleteObjectCommand,
   PutObjectCommand,
-  S3Client,
+  type S3Client,
 } from "@aws-sdk/client-s3";
 
+import { createObjectClient } from "./object-client";
 import { env } from "../config/env";
 import { ImageProcessingQueue } from "../queue/image-processing-queue";
 import type { StorageProvider } from "./storage-provider";
@@ -35,9 +36,7 @@ export class S3StorageProvider implements StorageProvider {
 
     this.bucket = env.AWS_S3_BUCKET;
 
-    this.client = new S3Client({
-      region: env.AWS_REGION,
-    });
+    this.client = createObjectClient();
 
     this.queue = new ImageProcessingQueue();
   }
@@ -118,6 +117,8 @@ export class S3StorageProvider implements StorageProvider {
       .map(encodeURIComponent)
       .join("/");
 
+    if (env.MINIO_ENDPOINT) return `/media/${encodedKey}`;
+
     return (
       `https://${this.bucket}.s3.${env.AWS_REGION}` +
       `.amazonaws.com/${encodedKey}`
@@ -126,6 +127,12 @@ export class S3StorageProvider implements StorageProvider {
 
   private extractKey(fileUrl: string): string | null {
     try {
+      if (env.MINIO_ENDPOINT) {
+        return fileUrl.startsWith("/media/smash-or-pass/")
+          ? decodeURIComponent(fileUrl.slice("/media/".length))
+          : null;
+      }
+
       const parsedUrl = new URL(fileUrl);
 
       const expectedHost =

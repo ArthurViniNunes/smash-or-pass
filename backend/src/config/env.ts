@@ -19,6 +19,11 @@ const envSchema = z.object({
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
 
+  MINIO_ENDPOINT: z.string().url().optional(),
+  MINIO_ROOT_USER: z.string().optional(),
+  MINIO_ROOT_PASSWORD: z.string().optional(),
+  RABBITMQ_URL: z.string().url().optional(),
+
   AWS_REGION: z.string().default("us-east-1"),
   AWS_S3_BUCKET: z.string().optional(),
   AWS_SQS_IMAGE_QUEUE_URL: z.string().url().optional(),
