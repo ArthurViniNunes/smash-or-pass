@@ -300,5 +300,28 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Docker Compose
 
-See the [Docker Compose setup and verification guide](README-ptbr.md#trabalho-2--docker-compose)
-for the PostgreSQL, MinIO, RabbitMQ and AWS DynamoDB configuration.
+Use Docker with Compose v2 and AWS CLI. Clone the repository and run the
+following commands from its root. On PowerShell, use
+`Copy-Item .env.compose.example .env.compose` and `curl.exe`.
+
+```sh
+git clone https://github.com/ArthurViniNunes/smash-or-pass.git
+cd smash-or-pass
+cp .env.compose.example .env.compose
+```
+
+Set the service passwords in `.env.compose` and configure access to the
+AWS DynamoDB audit table before starting the stack. The Portuguese README
+describes the required variables and table setup.
+
+```sh
+docker compose --env-file .env.compose config -q
+docker compose --env-file .env.compose up --build -d
+docker compose --env-file .env.compose ps -a
+curl -fsS http://localhost/health
+```
+
+Open [http://localhost](http://localhost). See the
+[complete setup](README-ptbr.md#executar-localmente) and the
+[evidence walkthrough](README-ptbr.md#evidências-de-funcionamento)
+for PostgreSQL, MinIO, RabbitMQ and DynamoDB.
